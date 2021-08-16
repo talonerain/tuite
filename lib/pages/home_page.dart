@@ -48,7 +48,7 @@ class _HomePageState extends State<HomePage> {
       children: list.map((model) {
         itemIndex++;
         String author = model.user.name;
-        String text = model.user.description;
+        String text = model.text;
         return Padding(
             padding: EdgeInsets.fromLTRB(0, 25, 0, 25),
             child: Column(
