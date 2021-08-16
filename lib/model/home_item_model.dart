@@ -47,7 +47,25 @@ class HomeItemModel {
   factory HomeItemModel.fromJson(Map<String, dynamic> json) {
     return HomeItemModel(
       user: User.fromJson(json['user']),
-
+      createdTime: json['createdTime'],
+      id: json['id'],
+      idStr: json['idStr'],
+      text: json['text'],
+      truncated: json['truncated'],
+      source: json['source'],
+      inReplyToStatusId: json['inReplyToStatusId'],
+      inReplyToStatusIdStr: json['inReplyToStatusIdStr'],
+      inReplyToUserId: json['inReplyToUserId'],
+      inReplyToUserIdStr: json['inReplyToUserIdStr'],
+      inReplyToScreenName: json['inReplyToScreenName'],
+      isQuoteStatus: json['isQuoteStatus'],
+      retweetCount: json['retweetCount'],
+      favoriteCount: json['favoriteCount'],
+      favorited: json['favorited'],
+      retweeted: json['retweeted'],
+      possiblySensitive: json['possiblySensitive'],
+      possiblySensitiveAppealable: json['possiblySensitiveAppealable'],
+      lang: json['lang'],
     );
   }
 }
