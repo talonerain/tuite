@@ -12,14 +12,13 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  int homePageIndex = -1;
+  int homePageIndex = 0;
 
   @override
   Widget build(BuildContext context) {
-    homePageIndex++;
     return Scaffold(
       body: FutureBuilder<HomeListModel>(
-        future: NetService.getHomeList(homePageIndex, "userName"),
+        future: NetService.getHomeList(homePageIndex++, "userName"),
         builder: (BuildContext context, AsyncSnapshot<HomeListModel> snapshot) {
           // connectionState表示异步计算的状态
           switch (snapshot.connectionState) {
@@ -44,25 +43,33 @@ class _HomePageState extends State<HomePage> {
 
   Widget _listView(List<HomeItemModel> list) {
     int itemIndex = 0;
-    return ListView(
-      children: list.map((model) {
-        itemIndex++;
-        String author = model.user.name;
-        String text = model.text;
-        return Padding(
-            padding: EdgeInsets.fromLTRB(0, 25, 0, 25),
-            child: Column(
-              children: [
-                Text('第$itemIndex个item的作者是$author',
-                    style: TextStyle(color: Colors.black, fontSize: 15)),
-                Container(
-                  margin: EdgeInsets.only(top: 10),
-                  child: Text(text,
+    return RefreshIndicator(
+      onRefresh: () {
+        setState(() {
+          homePageIndex = 0;
+        });
+        return null;
+      },
+      child: ListView(
+        children: list.map((model) {
+          itemIndex++;
+          String author = model.user.name;
+          String text = model.text;
+          return Padding(
+              padding: EdgeInsets.fromLTRB(0, 25, 0, 25),
+              child: Column(
+                children: [
+                  Text('第$itemIndex个item的作者是$author',
                       style: TextStyle(color: Colors.black, fontSize: 15)),
-                )
-              ],
-            ));
-      }).toList(),
+                  Container(
+                    margin: EdgeInsets.only(top: 10),
+                    child: Text(text,
+                        style: TextStyle(color: Colors.black, fontSize: 15)),
+                  )
+                ],
+              ));
+        }).toList(),
+      ),
     );
   }
 }
