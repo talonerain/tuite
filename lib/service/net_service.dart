@@ -17,7 +17,7 @@ class NetService {
   ///
   /// 在Dart中，有await标记的运算，其结果值都是一个Future对象，要使用await，
   /// 必须在有async标记的函数中运行，否则这个await会报错
-  static Future<HomeListModel> getHomeList(String userName) async {
+  static Future<HomeListModel> getHomeList(int pageIndex, String userName) async {
     // map是可选参数
     /*var uri =
         Uri.https(BASE_DOMAIN, HOME_TIMELINE_URL, {'screen_name': userName});
