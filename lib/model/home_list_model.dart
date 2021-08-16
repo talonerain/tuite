@@ -7,7 +7,7 @@ class HomeListModel {
 
   factory HomeListModel.fromJson(List homeListJson) {
     List<HomeItemModel> homeList =
-        homeListJson.map((e) => HomeItemModel.fromJson(e));
+        homeListJson.map((e) => HomeItemModel.fromJson(e)).toList();
     return HomeListModel(homeList);
   }
 }

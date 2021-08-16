@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tuite/model/home_list_model.dart';
 
-import '../service/net_ervice.dart';
+import '../service/net_service.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -27,7 +27,10 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<Null> _fetchData()async{
+    print('will fetch home data');
     HomeListModel homeListModel = await NetService.getHomeList("userName");
     print(homeListModel.homeListModel.length);
+    print(homeListModel.homeListModel[2].createdTime);
+    print(homeListModel.homeListModel[2].user.name);
   }
 }

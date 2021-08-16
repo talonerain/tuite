@@ -19,7 +19,7 @@ class NetService {
   /// 必须在有async标记的函数中运行，否则这个await会报错
   static Future<HomeListModel> getHomeList(String userName) async {
     // map是可选参数
-    var uri =
+    /*var uri =
         Uri.https(BASE_DOMAIN, HOME_TIMELINE_URL, {'screen_name': userName});
     var response = await httpPlugin.get(uri);
     if (response.statusCode == 200) {
@@ -28,6 +28,8 @@ class NetService {
       return HomeListModel.fromJson(homeTimeLineData.homeTimeLineList);
     } else {
       throw Exception('Failed to getHomeList');
-    }
+    }*/
+
+    return HomeListModel.fromJson(homeTimeLineData.homeTimeLineList);
   }
 }
