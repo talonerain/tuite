@@ -13,12 +13,15 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int homePageIndex = 0;
+  List<HomeItemModel> list = [];
+  ScrollController _scrollController = new ScrollController();
+  bool isRefresh;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: FutureBuilder<HomeListModel>(
-        future: NetService.getHomeList(homePageIndex++, "userName"),
+        future: NetService.getHomeList(homePageIndex, "userName"),
         builder: (BuildContext context, AsyncSnapshot<HomeListModel> snapshot) {
           // connectionState表示异步计算的状态
           switch (snapshot.connectionState) {
@@ -27,7 +30,12 @@ class _HomePageState extends State<HomePage> {
             case ConnectionState.active:
               return Text('列表即将展示');
             case ConnectionState.done:
-              return _listView(snapshot.data.homeListModel);
+              if (isRefresh) {
+                list.clear();
+                isRefresh = false;
+              }
+              list.addAll(snapshot.data.homeListModel);
+              return _listView();
             default:
               return Text('bad case');
           }
@@ -39,24 +47,37 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+    isRefresh = false;
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels ==
+          _scrollController.position.maxScrollExtent) {
+        setState(() {
+          homePageIndex++;
+        });
+      }
+    });
   }
 
-  Widget _listView(List<HomeItemModel> list) {
+  Widget _listView() {
     int itemIndex = 0;
     return RefreshIndicator(
       onRefresh: () {
         setState(() {
           homePageIndex = 0;
+          isRefresh = true;
         });
         return null;
       },
       child: ListView(
-        children: list.map((model) {
-          itemIndex++;
-          String author = model.user.name;
-          String text = model.text;
-          return Padding(
-              padding: EdgeInsets.fromLTRB(0, 25, 0, 25),
+          controller: _scrollController,
+          children: list.map((model) {
+            itemIndex++;
+            String author = model.user.name;
+            String text = model.text;
+            return Container(
+              decoration: BoxDecoration(color: Colors.indigo),
+              margin: EdgeInsets.fromLTRB(5, 10, 5, 10),
+              padding: EdgeInsets.fromLTRB(5, 5, 5, 5),
               child: Column(
                 children: [
                   Text('第$itemIndex个item的作者是$author',
@@ -67,9 +88,16 @@ class _HomePageState extends State<HomePage> {
                         style: TextStyle(color: Colors.black, fontSize: 15)),
                   )
                 ],
-              ));
-        }).toList(),
-      ),
+              ),
+            );
+          }).toList()),
     );
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    _scrollController.dispose();
   }
 }
