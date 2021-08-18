@@ -42,24 +42,7 @@ class _HomePageState extends State<HomePage> {
           controller: _scrollController,
           children: list.map((model) {
             itemIndex++;
-            String author = model.user.name;
-            String text = model.text;
-            return Container(
-              decoration: BoxDecoration(color: Colors.indigo),
-              margin: EdgeInsets.only(bottom: 5),
-              padding: EdgeInsets.fromLTRB(5, 5, 5, 5),
-              child: Column(
-                children: [
-                  Text('第$itemIndex个item的作者是$author',
-                      style: TextStyle(color: Colors.black, fontSize: 15)),
-                  Container(
-                    margin: EdgeInsets.only(top: 10),
-                    child: Text(text,
-                        style: TextStyle(color: Colors.black, fontSize: 15)),
-                  )
-                ],
-              ),
-            );
+            return _item(model, itemIndex);
           }).toList()),
     );
   }
@@ -79,6 +62,22 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       list.addAll(homeListModel.homeList);
     });
+  }
+
+  Widget _item(HomeItemModel itemModel, int itemIndex) {
+    return Container(
+      child: Row(
+        children: [
+          ClipOval(
+            child: Image.network(
+              itemModel.user.profileImageUrlHttps,
+              width: 20,
+              height: 20,
+            ),
+          )
+        ],
+      ),
+    );
   }
 
   @override

@@ -84,7 +84,7 @@ class User {
   final int followersCount;
   final int friendsCount;
   final int listedCount;
-  final int createAt;
+  final String createAt;
   final int favouritesCount;
   final bool geoEnabled;
   final bool verified;
@@ -147,38 +147,38 @@ class User {
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
       id: json['id'],
-      idStr: json['idStr'],
-      screenName: json['screenName'],
+      idStr: json['id_str'],
+      screenName: json['screen_name'],
       name: json['name'],
       location: json['location'],
       description: json['description'],
       url: json['url'],
       protected: json['protected'],
-      followersCount: json['followersCount'],
-      friendsCount: json['friendsCount'],
-      listedCount: json['listedCount'],
-      createAt: json['createAt'],
-      favouritesCount: json['favouritesCount'],
-      geoEnabled: json['geoEnabled'],
+      followersCount: json['followers_count'],
+      friendsCount: json['friends_count'],
+      listedCount: json['listed_count'],
+      createAt: json['created_at'],
+      favouritesCount: json['favourites_count'],
+      geoEnabled: json['geo_enabled'],
       verified: json['verified'],
-      profileBackgroundColor: json['profileBackgroundColor'],
-      profileBackgroundImageUrl: json['profileBackgroundImageUrl'],
-      profileBackgroundImageUrlHttps: json['profileBackgroundImageUrlHttps'],
-      profileBackgroundTitle: json['profileBackgroundTitle'],
-      profileImageUrlHttps: json['profileImageUrlHttps'],
-      profileBannerUrl: json['profileBannerUrl'],
-      profileImageUrl: json['profileImageUrl'],
-      profileLinkColor: json['profileLinkColor'],
-      profileSidebarBorderColor: json['profileSidebarBorderColor'],
-      profileSidebarFillColor: json['profileSidebarFillColor'],
-      profileTextColor: json['profileTextColor'],
-      profileUseBackgroundImage: json['profileUseBackgroundImage'],
-      hasExtendedProfile: json['hasExtendedProfile'],
-      defaultProfile: json['defaultProfile'],
+      profileBackgroundColor: json['profile_background_color'],
+      profileBackgroundImageUrl: json['profile_background_image_url'],
+      profileBackgroundImageUrlHttps: json['profile_background_image_url_https'],
+      profileBackgroundTitle: json['profile_background_tile'],
+      profileImageUrlHttps: json['profile_image_url_https'],
+      profileBannerUrl: json['profile_banner_url'],
+      profileImageUrl: json['profile_image_url'],
+      profileLinkColor: json['profile_link_color'],
+      profileSidebarBorderColor: json['profile_sidebar_border_color'],
+      profileSidebarFillColor: json['profile_sidebar_fill_color'],
+      profileTextColor: json['profile_text_color'],
+      profileUseBackgroundImage: json['profile_use_background_image'],
+      hasExtendedProfile: json['has_extended_profile'],
+      defaultProfile: json['default_profile'],
       following: json['following'],
-      followRequestSent: json['followRequestSent'],
+      followRequestSent: json['follow_request_sent'],
       notifications: json['notifications'],
-      translatorType: json['translatorType'],
+      translatorType: json['translator_type'],
     );
   }
 }
