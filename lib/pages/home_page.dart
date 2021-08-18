@@ -12,48 +12,24 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  int homePageIndex = 0;
+  int _pageIndex = 0;
   List<HomeItemModel> list = [];
   ScrollController _scrollController = new ScrollController();
-  bool isRefresh;
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: FutureBuilder<HomeListModel>(
-        future: NetService.getHomeList(homePageIndex, "userName"),
-        builder: (BuildContext context, AsyncSnapshot<HomeListModel> snapshot) {
-          // connectionState表示异步计算的状态
-          switch (snapshot.connectionState) {
-            case ConnectionState.none:
-            case ConnectionState.waiting:
-            case ConnectionState.active:
-              return Text('列表即将展示');
-            case ConnectionState.done:
-              if (isRefresh) {
-                list.clear();
-                isRefresh = false;
-              }
-              list.addAll(snapshot.data.homeListModel);
-              return _listView();
-            default:
-              return Text('bad case');
-          }
-        },
-      ),
-    );
+    return Scaffold(body: _listView());
   }
 
   @override
   void initState() {
     super.initState();
-    isRefresh = false;
+    _loadData(true);
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
-          _scrollController.position.maxScrollExtent) {
-        setState(() {
-          homePageIndex++;
-        });
+          _scrollController.position.maxScrollExtent - 3) {
+        _pageIndex++;
+        _loadData(false);
       }
     });
   }
@@ -61,13 +37,7 @@ class _HomePageState extends State<HomePage> {
   Widget _listView() {
     int itemIndex = 0;
     return RefreshIndicator(
-      onRefresh: () {
-        setState(() {
-          homePageIndex = 0;
-          isRefresh = true;
-        });
-        return null;
-      },
+      onRefresh: _handlerRefresh,
       child: ListView(
           controller: _scrollController,
           children: list.map((model) {
@@ -76,7 +46,7 @@ class _HomePageState extends State<HomePage> {
             String text = model.text;
             return Container(
               decoration: BoxDecoration(color: Colors.indigo),
-              margin: EdgeInsets.fromLTRB(5, 10, 5, 10),
+              margin: EdgeInsets.only(bottom: 5),
               padding: EdgeInsets.fromLTRB(5, 5, 5, 5),
               child: Column(
                 children: [
@@ -92,6 +62,23 @@ class _HomePageState extends State<HomePage> {
             );
           }).toList()),
     );
+  }
+
+  Future<Null> _handlerRefresh() async {
+    _loadData(true);
+    return null;
+  }
+
+  _loadData(bool isRefresh) async {
+    if (isRefresh) {
+      _pageIndex = 0;
+      list.clear();
+    }
+    HomeListModel homeListModel =
+        await NetService.getHomeList(_pageIndex, "userName");
+    setState(() {
+      list.addAll(homeListModel.homeList);
+    });
   }
 
   @override

@@ -1,9 +1,9 @@
 import 'home_item_model.dart';
 
 class HomeListModel {
-  final List<HomeItemModel> homeListModel;
+  final List<HomeItemModel> homeList;
 
-  HomeListModel(this.homeListModel);
+  HomeListModel(this.homeList);
 
   factory HomeListModel.fromJson(List homeListJson) {
     List<HomeItemModel> homeList =
