@@ -66,13 +66,31 @@ class _HomePageState extends State<HomePage> {
 
   Widget _item(HomeItemModel itemModel, int itemIndex) {
     return Container(
+      padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
       child: Row(
         children: [
-          ClipOval(
-            child: Image.network(
-              itemModel.user.profileImageUrlHttps,
-              width: 20,
-              height: 20,
+          CircleAvatar(
+            radius: 25,
+            backgroundImage: NetworkImage(itemModel.user.profileImageUrlHttps),
+          ),
+          Container(
+            margin: EdgeInsets.only(left: 10),
+            child: Wrap(
+              alignment: WrapAlignment.center,
+              direction: Axis.vertical,
+              children: [
+                Text(
+                  itemModel.user.name,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 17,
+                  ),
+                ),
+                Text(
+                  itemModel.text,
+                  style: TextStyle(fontSize: 17),
+                )
+              ],
             ),
           )
         ],
