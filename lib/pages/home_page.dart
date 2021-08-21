@@ -66,35 +66,95 @@ class _HomePageState extends State<HomePage> {
 
   Widget _item(HomeItemModel itemModel, int itemIndex) {
     return Container(
-      padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
-      child: Row(
-        children: [
-          CircleAvatar(
-            radius: 25,
-            backgroundImage: NetworkImage(itemModel.user.profileImageUrlHttps),
-          ),
-          Container(
-            margin: EdgeInsets.only(left: 10),
-            child: Wrap(
-              alignment: WrapAlignment.center,
-              direction: Axis.vertical,
+      padding: EdgeInsets.fromLTRB(10, 8, 10, 10),
+      decoration: BoxDecoration(
+          border: Border(bottom: BorderSide(width: 0.3, color: Colors.grey))),
+      child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Padding(
+            padding: EdgeInsets.only(top: 2),
+            child: CircleAvatar(
+              radius: 24,
+              backgroundImage:
+                  NetworkImage(itemModel.user.profileImageUrlHttps),
+            )),
+        SizedBox(width: 10),
+        Expanded(
+            child: Column(
+          children: [
+            Row(
               children: [
                 Text(
                   itemModel.user.name,
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    fontSize: 17,
+                    fontSize: 15,
                   ),
                 ),
+                SizedBox(width: 2),
+                Icon(
+                  Icons.verified,
+                  color: Colors.blue,
+                  size: 15,
+                ),
+                SizedBox(width: 2),
+                Expanded(
+                    child: Text(
+                  '@' + itemModel.user.screenName,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(color: Color(0xFF616161), fontSize: 13),
+                )),
                 Text(
-                  itemModel.text,
-                  style: TextStyle(fontSize: 17),
+                  '· 2天',
+                  style: TextStyle(color: Color(0xFF616161)),
+                ),
+                Opacity(
+                  opacity: 0.4,
+                  child: Icon(
+                    Icons.more_vert,
+                    color: Colors.grey,
+                    size: 19,
+                  ),
                 )
               ],
             ),
-          )
-        ],
-      ),
+            Text(
+              itemModel.text,
+              style: TextStyle(fontSize: 15, color: Colors.black),
+            ),
+            SizedBox(height: 10),
+            Container(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  _itemIconBox(Icons.mode_comment_outlined, '118'),
+                  _itemIconBox(Icons.repeat, '105'),
+                  _itemIconBox(Icons.favorite_border, '274'),
+                  Icon(
+                    Icons.share_outlined,
+                    color: Color(0xFF616161),
+                    size: 15,
+                  )
+                ],
+              ),
+              margin: EdgeInsets.only(right: 35),
+            )
+          ],
+        )),
+      ]),
+    );
+  }
+
+  Widget _itemIconBox(IconData iconData, String num) {
+    return Row(
+      children: [
+        Icon(iconData, color: Color(0xFF616161), size: 18),
+        SizedBox(width: 6),
+        Text(
+          num,
+          style: TextStyle(color: Color(0xFF616161), fontSize: 13),
+        )
+      ],
     );
   }
 
