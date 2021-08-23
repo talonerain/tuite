@@ -50,7 +50,7 @@ class HomeItemModel {
       createdTime: json['created_at'],
       id: json['id'],
       idStr: json['id_str'],
-      text: json['text'],
+      text: json['full_text'],
       truncated: json['truncated'],
       source: json['source'],
       inReplyToStatusId: json['in_reply_to_status_id'],
