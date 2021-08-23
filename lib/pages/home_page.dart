@@ -127,9 +127,9 @@ class _HomePageState extends State<HomePage> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  _itemIconBox(Icons.mode_comment_outlined, '118'),
-                  _itemIconBox(Icons.repeat, '105'),
-                  _itemIconBox(Icons.favorite_border, '274'),
+                  _itemIconBox(Icons.mode_comment_outlined, '123'),
+                  _itemIconBox(Icons.repeat, itemModel.retweetCount.toString()),
+                  _itemIconBox(Icons.favorite_border, itemModel.favoriteCount.toString()),
                   Icon(
                     Icons.share_outlined,
                     color: Color(0xFF616161),
