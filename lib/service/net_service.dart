@@ -5,6 +5,7 @@ import 'package:tuite/model/home_list_model.dart';
 // dart文件可以不取类名只写方法，由调用方自定义类名
 import 'package:http/http.dart' as httpPlugin;
 import 'home_timeline_data.dart' as homeTimeLineData;
+import 'package:crypto/crypto.dart';
 
 const BASE_DOMAIN = 'https://api.twitter.com';
 const HOME_TIMELINE_URL = "/1.1/statuses/home_timeline.json";
@@ -40,6 +41,7 @@ class NetService {
     String signBase = Uri.encodeComponent('GET') + '&' +Uri.decodeComponent(BASE_DOMAIN + HOME_TIMELINE_URL) +
     '&' + Uri.decodeComponent(authParams);
     String signKey = 's7H38rTHA0yjvYlBl4q3eCGb7159XypW7YldqT5qS6vBbN1XOg&VcuAtbaluIgEsZwUMPBG0pjNEUeFo8JKeewSevCKk7Nsn';
+
     // map是可选参数
     var uri =
         Uri.https(BASE_DOMAIN, HOME_TIMELINE_URL, {'screen_name': userName});
