@@ -10,6 +10,24 @@ const BASE_DOMAIN = 'api.twitter.com';
 const HOME_TIMELINE_URL = "/1.1/statuses/home_timeline.json";
 
 class NetService {
+
+  String get authParams{
+    String timeStamp = new DateTime.now().microsecondsSinceEpoch.toString();
+    print('timeStamp == ' + timeStamp);
+    return 'oauth_consumer_key=08uIIOBhb01ajxoLSiYskmK9L&'
+        'oauth_nonce=NDMyNTk4NzM0MjUwOTgzNDc1ODM5ODU3NjQ3NTY4MzQ&'
+        'oauth_signature_method=HMAC-SHA1&oauth_timestamp=$timeStamp&'
+        'oauth_token=736198546236411905-kx70ljMQ1oXbqEX2zuFgtuFw1EoLY3W&'
+        'oauth_version=1.0&screen_name=QoogZuwdghUwO6h&tweet_mode=extended&'
+        'include_entities=true';
+  }
+
+  String get authInfo {
+    String timeStamp = new DateTime.now().microsecondsSinceEpoch.toString();
+    print('timeStamp == ' + timeStamp);
+    String authInfo = 'OAuth oauth_consumer_key="08uIIOBhb01ajxoLSiYskmK9L", oauth_nonce="NDMyNTk4NzM0MjUwOTgzNDc1ODM5ODU3NjQ3NTY4MzQ", oauth_signature="WSh37hgBX1m7Sc%2Bu40YW4PhWmvk%3D", oauth_signature_method="HMAC-SHA1", oauth_timestamp=${timeStamp}, oauth_token="736198546236411905-kx70ljMQ1oXbqEX2zuFgtuFw1EoLY3W", oauth_version="1.0"';
+  }
+
   /// Future表示未来的一个返回值，即await延迟执行的结果；
   ///
   /// async表示函数是一个异步函数，返回值为Future类型，Dart规定有async标记的函数，
@@ -17,18 +35,20 @@ class NetService {
   ///
   /// 在Dart中，有await标记的运算，其结果值都是一个Future对象，要使用await，
   /// 必须在有async标记的函数中运行，否则这个await会报错
-  static Future<HomeListModel> getHomeList(int pageIndex, String userName) async {
+  static Future<HomeListModel> getHomeList(
+      int pageIndex, String userName) async {
     // map是可选参数
-    /*var uri =
+    var uri =
         Uri.https(BASE_DOMAIN, HOME_TIMELINE_URL, {'screen_name': userName});
-    var response = await httpPlugin.get(uri);
+    var response =
+        await httpPlugin.get(uri, headers: {'Authorization': '12312'});
     if (response.statusCode == 200) {
       Utf8Decoder utf8decoder = Utf8Decoder();
       var jsonResponse = json.decode(utf8decoder.convert(response.bodyBytes));
       return HomeListModel.fromJson(homeTimeLineData.homeTimeLineList);
     } else {
       throw Exception('Failed to getHomeList');
-    }*/
+    }
 
     return HomeListModel.fromJson(homeTimeLineData.homeTimeLineList);
   }
