@@ -7,9 +7,9 @@ class HomeItemModel {
 
   //final Entities entities;
   final String source;
-  final String inReplyToStatusId;
+  final int inReplyToStatusId;
   final String inReplyToStatusIdStr;
-  final String inReplyToUserId;
+  final int inReplyToUserId;
   final String inReplyToUserIdStr;
   final String inReplyToScreenName;
   final User user;
