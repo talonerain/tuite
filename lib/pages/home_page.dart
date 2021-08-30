@@ -58,7 +58,7 @@ class _HomePageState extends State<HomePage> {
       list.clear();
     }
     HomeListModel homeListModel =
-        await NetService.getHomeList(_pageIndex, "userName");
+        await NetService.getHomeList(_pageIndex, "QoogZuwdghUwO6h");
     setState(() {
       list.addAll(homeListModel.homeList);
     });

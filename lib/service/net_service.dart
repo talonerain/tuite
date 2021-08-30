@@ -7,28 +7,13 @@ import 'package:http/http.dart' as httpPlugin;
 import 'home_timeline_data.dart' as homeTimeLineData;
 import 'package:crypto/crypto.dart';
 
-const BASE_DOMAIN = 'https://api.twitter.com';
-const HOME_TIMELINE_URL = "/1.1/statuses/home_timeline.json";
+const BASE_DOMAIN = 'api.twitter.com';
+const apiKey = 'pSrO11kSygw7Lot2lFHtnD9df';
+const apiSecretKey = 'hokhAxCucTkLvSZvXQXndPoHnaVsWHI76dwCpzRQ3FGqgAUXwo';
+const accessToken = '736198546236411905-1MaDM9paBpRf8FKv20AYk8R2R7sofJp';
+const accessTokenSecret = 'OkB9OVP2UnHin5aNIGW5Rr52eNpSep2j3ZOCmaRTR5A8U';
 
 class NetService {
-  static String get authParams {
-    String timeStamp = new DateTime.now().microsecondsSinceEpoch.toString();
-    print('timeStamp == ' + timeStamp);
-    return 'oauth_consumer_key=08uIIOBhb01ajxoLSiYskmK9L&'
-        'oauth_nonce=NDMyNTk4NzM0MjUwOTgzNDc1ODM5ODU3NjQ3NTY4MzQ&'
-        'oauth_signature_method=HMAC-SHA1&oauth_timestamp=$timeStamp&'
-        'oauth_token=736198546236411905-kx70ljMQ1oXbqEX2zuFgtuFw1EoLY3W&'
-        'oauth_version=1.0&screen_name=QoogZuwdghUwO6h&tweet_mode=extended&'
-        'include_entities=true';
-  }
-
-  String get authInfo {
-    String timeStamp = new DateTime.now().microsecondsSinceEpoch.toString();
-    print('timeStamp == ' + timeStamp);
-    String authInfo =
-        'OAuth oauth_consumer_key="08uIIOBhb01ajxoLSiYskmK9L", oauth_nonce="NDMyNTk4NzM0MjUwOTgzNDc1ODM5ODU3NjQ3NTY4MzQ", oauth_signature="WSh37hgBX1m7Sc%2Bu40YW4PhWmvk%3D", oauth_signature_method="HMAC-SHA1", oauth_timestamp=${timeStamp}, oauth_token="736198546236411905-kx70ljMQ1oXbqEX2zuFgtuFw1EoLY3W", oauth_version="1.0"';
-  }
-
   /// Future表示未来的一个返回值，即await延迟执行的结果；
   ///
   /// async表示函数是一个异步函数，返回值为Future类型，Dart规定有async标记的函数，
@@ -38,21 +23,52 @@ class NetService {
   /// 必须在有async标记的函数中运行，否则这个await会报错
   static Future<HomeListModel> getHomeList(
       int pageIndex, String userName) async {
-    String signBase = Uri.encodeComponent('GET') + '&' +Uri.decodeComponent(BASE_DOMAIN + HOME_TIMELINE_URL) +
-    '&' + Uri.decodeComponent(authParams);
-    String signKey = 's7H38rTHA0yjvYlBl4q3eCGb7159XypW7YldqT5qS6vBbN1XOg&VcuAtbaluIgEsZwUMPBG0pjNEUeFo8JKeewSevCKk7Nsn';
+    String requestUrl = "/1.1/statuses/home_timeline.json";
+    int timeStampValue = new DateTime.now().millisecondsSinceEpoch;
+    String timeStamp = '1630330713';
+    String oauthNonce = 'NDMyNTk4NzM0MjUwOTgzNDc1ODM5ODU3NjQ3NTY4MzK';
+
+    String authParams = 'oauth_consumer_key=$apiKey&'
+        'oauth_nonce=$oauthNonce&'
+        'oauth_signature_method=HMAC-SHA1&oauth_timestamp=$timeStamp&'
+        'oauth_token=$accessToken&'
+        'oauth_version=1.0&screen_name=$userName&tweet_mode=extended';
+
+    print('timeStamp == ' + timeStamp);
+    // 签名base：请求方式&url&参数
+    String baseString = Uri.encodeComponent('GET') +
+        '&' +
+        Uri.decodeComponent('https://api.twitter.com' + requestUrl) +
+        '&' +
+        Uri.decodeComponent(authParams);
+    print('baseString == ' + baseString);
+    // 签名密钥
+    String signingKey = '$apiSecretKey&$accessTokenSecret';
+    print('signingKey == ' + signingKey);
+    var hMac = Hmac(sha1, signingKey.codeUnits);
+    String signResult = Uri.encodeComponent(
+        base64Encode(hMac.convert(baseString.codeUnits).bytes));
+    print('signResult == ' + signResult);
+    String authInfo = 'OAuth oauth_consumer_key="$apiKey", '
+        'oauth_nonce="$oauthNonce", '
+        'oauth_signature=$signResult, '
+        'oauth_signature_method="HMAC-SHA1", '
+        'oauth_timestamp="$timeStamp", '
+        'oauth_token="$accessToken", '
+        'oauth_version="1.0"';
 
     // map是可选参数
-    var uri =
-        Uri.https(BASE_DOMAIN, HOME_TIMELINE_URL, {'screen_name': userName});
+    var uri = Uri.https(BASE_DOMAIN, requestUrl,
+        {'screen_name': userName, 'tweet_mode': 'extended'});
     var response =
-        await httpPlugin.get(uri, headers: {'Authorization': '12312'});
+        await httpPlugin.get(uri, headers: {'Authorization': authInfo});
     if (response.statusCode == 200) {
       Utf8Decoder utf8decoder = Utf8Decoder();
       var jsonResponse = json.decode(utf8decoder.convert(response.bodyBytes));
-      return HomeListModel.fromJson(homeTimeLineData.homeTimeLineList);
+      return HomeListModel.fromJson(jsonResponse);
     } else {
-      throw Exception('Failed to getHomeList');
+      throw Exception('Failed to getHomeList, code == ${response.statusCode}, '
+          'error == ${response.reasonPhrase}');
     }
 
     return HomeListModel.fromJson(homeTimeLineData.homeTimeLineList);
