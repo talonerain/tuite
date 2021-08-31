@@ -69,6 +69,16 @@ class HomeItemModel {
         lang: json['lang'],
         entities: Entity.fromJson(json['entities']));
   }
+
+  String get content {
+    String result = text;
+    if (text.contains('https')) {
+      result = text.substring(0, text.indexOf('https'));
+      result = result.trim();
+    }
+    print(result);
+    return result;
+  }
 }
 
 class User {

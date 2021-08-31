@@ -81,6 +81,8 @@ class _HomePageState extends State<HomePage>
         SizedBox(width: 10),
         Expanded(
             child: Column(
+              // 如果不设置这个属性，text文字会居中，不会从开始展示
+              crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
@@ -120,13 +122,13 @@ class _HomePageState extends State<HomePage>
               ],
             ),
             Text(
-              itemModel.text,
+              itemModel.content,
               style: TextStyle(fontSize: 15, color: Colors.black),
             ),
             // 动态控制widget是否展示
             Offstage(
-                offstage: itemModel.entities != null &&
-                    itemModel.entities.getMediaList().length > 0,
+                offstage: itemModel.entities == null ||
+                    itemModel.entities.getMediaList().length == 0,
                 child: _parseItemImgUrl(itemModel) == null
                     ? null
                     : Image.network(_parseItemImgUrl(itemModel))),
@@ -168,9 +170,13 @@ class _HomePageState extends State<HomePage>
       children: [
         Icon(iconData, color: Color(0xFF616161), size: 18),
         SizedBox(width: 6),
-        Text(
-          num,
-          style: TextStyle(color: Color(0xFF616161), fontSize: 13),
+        Offstage(
+          // offstage为true隐藏控件
+          offstage: num.endsWith('0'),
+          child: Text(
+            num,
+            style: TextStyle(color: Color(0xFF616161), fontSize: 13),
+          ),
         )
       ],
     );
