@@ -28,16 +28,14 @@ class NetService {
     int timeStampValue = new DateTime.now().millisecondsSinceEpoch;
     String timeStamp = '1630330713';
     String oauthNonce = 'NDMyNTk4NzM0MjUwOTgzNDc1ODM5ODU3NjQ3NTY4MzK';
-
+    // 认证参数：用于构建签名base
     String authParams = 'oauth_consumer_key=$apiKey&'
         'oauth_nonce=$oauthNonce&'
         'oauth_signature_method=HMAC-SHA1&oauth_timestamp=$timeStamp&'
         'oauth_token=$accessToken&'
-        'oauth_version=1.0&screen_name=$userName&tweet_mode=extended&'
-        'include_entities=true';
-
+        'oauth_version=1.0&screen_name=$userName&tweet_mode=extended';
     print('timeStamp == ' + timeStamp);
-    // 签名base：请求方式&url&参数
+    // 签名base：请求方式&url&认证参数
     String baseString = Uri.encodeComponent('GET') +
         '&' +
         Uri.encodeComponent('https://api.twitter.com' + requestUrl) +
@@ -45,13 +43,14 @@ class NetService {
         Uri.encodeComponent(authParams);
     print('baseString == ' + baseString);
     // 签名密钥
-    bool a = true;
     String signingKey = '$apiSecretKey&$accessTokenSecret';
     print('signingKey == ' + signingKey);
+    // 签名
     var hMac = Hmac(sha1, signingKey.codeUnits);
     String signResult = Uri.encodeComponent(
         base64Encode(hMac.convert(baseString.codeUnits).bytes));
     print('signResult == ' + signResult);
+    // 认证信息，请求头带到后端
     String authInfo = 'OAuth oauth_consumer_key="$apiKey", '
         'oauth_nonce="$oauthNonce", '
         'oauth_signature=$signResult, '
@@ -59,21 +58,12 @@ class NetService {
         'oauth_timestamp="$timeStamp", '
         'oauth_token="$accessToken", '
         'oauth_version="1.0"';
-
-    // map是可选参数
+    // 构建url，map是可选参数
     Uri uri = Uri.https(BASE_DOMAIN, requestUrl, {
       'screen_name': userName,
-      'tweet_mode': 'extended',
-      'include_entities': 'true'
+      'tweet_mode': 'extended'
     });
     var response = await get(uri, headers: {'Authorization': authInfo});
-
-    /*Dio dio = Dio();
-    dio.options.headers = {'Authorization': authInfo};
-    dio.options.baseUrl = 'https://api.twitter.com';
-    Response response = await dio.get(requestUrl, queryParameters:
-    {'screen_name': userName, 'tweet_mode': 'extended'});*/
-
     print('response.statusCode == ${response.statusCode}');
     if (response.statusCode == 200) {
       Utf8Decoder utf8decoder = Utf8Decoder();

@@ -11,7 +11,8 @@ class HomePage extends StatefulWidget {
   }
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage>
+    with AutomaticKeepAliveClientMixin {
   int _pageIndex = 0;
   List<HomeItemModel> list = [];
   ScrollController _scrollController = new ScrollController();
@@ -122,14 +123,22 @@ class _HomePageState extends State<HomePage> {
               itemModel.text,
               style: TextStyle(fontSize: 15, color: Colors.black),
             ),
+            // 动态控制widget是否展示
+            Offstage(
+                offstage: itemModel.entities != null &&
+                    itemModel.entities.getMediaList().length > 0,
+                child: _parseItemImgUrl(itemModel) == null
+                    ? null
+                    : Image.network(_parseItemImgUrl(itemModel))),
             SizedBox(height: 10),
             Container(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  _itemIconBox(Icons.mode_comment_outlined, '123'),
+                  _itemIconBox(Icons.mode_comment_outlined, ''),
                   _itemIconBox(Icons.repeat, itemModel.retweetCount.toString()),
-                  _itemIconBox(Icons.favorite_border, itemModel.favoriteCount.toString()),
+                  _itemIconBox(Icons.favorite_border,
+                      itemModel.favoriteCount.toString()),
                   Icon(
                     Icons.share_outlined,
                     color: Color(0xFF616161),
@@ -143,6 +152,15 @@ class _HomePageState extends State<HomePage> {
         )),
       ]),
     );
+  }
+
+  String _parseItemImgUrl(HomeItemModel itemModel) {
+    List<Media> mediaList = itemModel.entities.getMediaList();
+    if (mediaList.isNotEmpty) {
+      print('itemImgUrl == ${mediaList[0].mediaUrlHttps}');
+      return mediaList[0].mediaUrlHttps;
+    }
+    return null;
   }
 
   Widget _itemIconBox(IconData iconData, String num) {
@@ -162,6 +180,10 @@ class _HomePageState extends State<HomePage> {
   void dispose() {
     // TODO: implement dispose
     super.dispose();
-    _scrollController.dispose();
+    print('home_page.dispose()');
   }
+
+  /// pageView切换时页面不重绘
+  @override
+  bool get wantKeepAlive => true;
 }

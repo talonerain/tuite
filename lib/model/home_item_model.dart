@@ -5,7 +5,7 @@ class HomeItemModel {
   final String text;
   final bool truncated;
 
-  //final Entities entities;
+  final Entity entities;
   final String source;
   final int inReplyToStatusId;
   final String inReplyToStatusIdStr;
@@ -29,6 +29,7 @@ class HomeItemModel {
       this.text,
       this.truncated,
       this.source,
+      this.entities,
       this.inReplyToStatusId,
       this.inReplyToStatusIdStr,
       this.inReplyToUserId,
@@ -46,27 +47,27 @@ class HomeItemModel {
 
   factory HomeItemModel.fromJson(Map<String, dynamic> json) {
     return HomeItemModel(
-      user: User.fromJson(json['user']),
-      createdTime: json['created_at'],
-      id: json['id'],
-      idStr: json['id_str'],
-      text: json['full_text'],
-      truncated: json['truncated'],
-      source: json['source'],
-      inReplyToStatusId: json['in_reply_to_status_id'],
-      inReplyToStatusIdStr: json['in_reply_to_status_id_str'],
-      inReplyToUserId: json['in_reply_to_user_id'],
-      inReplyToUserIdStr: json['in_reply_to_user_id_str'],
-      inReplyToScreenName: json['in_reply_to_screen_name'],
-      isQuoteStatus: json['is_quote_status'],
-      retweetCount: json['retweet_count'],
-      favoriteCount: json['favorite_count'],
-      favorited: json['favorited'],
-      retweeted: json['retweeted'],
-      possiblySensitive: json['possibly_sensitive'],
-      possiblySensitiveAppealable: json['possibly_sensitive_appealable'],
-      lang: json['lang'],
-    );
+        user: User.fromJson(json['user']),
+        createdTime: json['created_at'],
+        id: json['id'],
+        idStr: json['id_str'],
+        text: json['full_text'],
+        truncated: json['truncated'],
+        source: json['source'],
+        inReplyToStatusId: json['in_reply_to_status_id'],
+        inReplyToStatusIdStr: json['in_reply_to_status_id_str'],
+        inReplyToUserId: json['in_reply_to_user_id'],
+        inReplyToUserIdStr: json['in_reply_to_user_id_str'],
+        inReplyToScreenName: json['in_reply_to_screen_name'],
+        isQuoteStatus: json['is_quote_status'],
+        retweetCount: json['retweet_count'],
+        favoriteCount: json['favorite_count'],
+        favorited: json['favorited'],
+        retweeted: json['retweeted'],
+        possiblySensitive: json['possibly_sensitive'],
+        possiblySensitiveAppealable: json['possibly_sensitive_appealable'],
+        lang: json['lang'],
+        entities: Entity.fromJson(json['entities']));
   }
 }
 
@@ -163,7 +164,8 @@ class User {
       verified: json['verified'],
       profileBackgroundColor: json['profile_background_color'],
       profileBackgroundImageUrl: json['profile_background_image_url'],
-      profileBackgroundImageUrlHttps: json['profile_background_image_url_https'],
+      profileBackgroundImageUrlHttps:
+          json['profile_background_image_url_https'],
       profileBackgroundTitle: json['profile_background_tile'],
       profileImageUrlHttps: json['profile_image_url_https'],
       profileBannerUrl: json['profile_banner_url'],
@@ -180,5 +182,44 @@ class User {
       notifications: json['notifications'],
       translatorType: json['translator_type'],
     );
+  }
+}
+
+class Entity {
+  List<Media> _media;
+
+  Entity(this._media);
+
+  factory Entity.fromJson(Map<String, dynamic> json) {
+    List<Media> mediaList;
+    if (json['media'] != null) {
+      json['media'].map((e) => Media.fromJson(e)).toList();
+    }
+    return Entity(mediaList);
+  }
+
+  List<Media> getMediaList() {
+    return _media ?? [];
+  }
+}
+
+class Media {
+  int id;
+
+  // 图片地址
+  String mediaUrl;
+  String mediaUrlHttps;
+
+  // 视频地址（推测，未验证）
+  String expandedUrl;
+
+  Media({this.id, this.mediaUrl, this.mediaUrlHttps, this.expandedUrl});
+
+  factory Media.fromJson(Map<String, dynamic> json) {
+    return Media(
+        id: json['id'],
+        mediaUrl: json['media_url'],
+        mediaUrlHttps: json['media_url_https'],
+        expandedUrl: json['expanded_url']);
   }
 }
