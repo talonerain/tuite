@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tuite/model/home_item_model.dart';
 import 'package:tuite/model/home_list_model.dart';
-
+import 'package:transparent_image/transparent_image.dart';
 import '../service/net_service.dart';
 
 class HomePage extends StatefulWidget {
@@ -81,8 +81,8 @@ class _HomePageState extends State<HomePage>
         SizedBox(width: 10),
         Expanded(
             child: Column(
-              // 如果不设置这个属性，text文字会居中，不会从开始展示
-              crossAxisAlignment: CrossAxisAlignment.start,
+          // 如果不设置这个属性，text文字会居中，不会从开始展示
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
@@ -121,17 +121,26 @@ class _HomePageState extends State<HomePage>
                 )
               ],
             ),
-            Text(
-              itemModel.content,
-              style: TextStyle(fontSize: 15, color: Colors.black),
+            Container(
+              margin: EdgeInsets.only(right: 5),
+              child: Text(
+                itemModel.content,
+                style: TextStyle(fontSize: 15, color: Colors.black),
+              ),
             ),
             // 动态控制widget是否展示
-            Offstage(
-                offstage: itemModel.entities == null ||
-                    itemModel.entities.getMediaList().length == 0,
+            Container(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10),
                 child: _parseItemImgUrl(itemModel) == null
                     ? null
-                    : Image.network(_parseItemImgUrl(itemModel))),
+                    : FadeInImage.memoryNetwork(
+                        height: 150,
+                        image: _parseItemImgUrl(itemModel),
+                        placeholder: kTransparentImage),
+              ),
+              margin: EdgeInsets.fromLTRB(0, 8, 10, 0),
+            ),
             SizedBox(height: 10),
             Container(
               child: Row(
@@ -141,11 +150,7 @@ class _HomePageState extends State<HomePage>
                   _itemIconBox(Icons.repeat, itemModel.retweetCount.toString()),
                   _itemIconBox(Icons.favorite_border,
                       itemModel.favoriteCount.toString()),
-                  Icon(
-                    Icons.share_outlined,
-                    color: Color(0xFF616161),
-                    size: 15,
-                  )
+                  _itemIconBox(Icons.share_outlined, ''),
                 ],
               ),
               margin: EdgeInsets.only(right: 35),
@@ -166,20 +171,22 @@ class _HomePageState extends State<HomePage>
   }
 
   Widget _itemIconBox(IconData iconData, String num) {
-    return Row(
-      children: [
-        Icon(iconData, color: Color(0xFF616161), size: 18),
-        SizedBox(width: 6),
-        Offstage(
-          // offstage为true隐藏控件
-          offstage: num.endsWith('0'),
-          child: Text(
-            num,
-            style: TextStyle(color: Color(0xFF616161), fontSize: 13),
-          ),
-        )
-      ],
-    );
+    return GestureDetector(
+        onTap: () => print('点击'),
+        child: Row(
+          children: [
+            Icon(iconData, color: Color(0xFF616161), size: 18),
+            SizedBox(width: 6),
+            Offstage(
+              // offstage为true隐藏控件
+              offstage: num.endsWith('0'),
+              child: Text(
+                num,
+                style: TextStyle(color: Color(0xFF616161), fontSize: 13),
+              ),
+            )
+          ],
+        ));
   }
 
   @override

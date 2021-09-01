@@ -5,7 +5,12 @@ class HomeItemModel {
   final String text;
   final bool truncated;
 
+  // 图片信息
   final Entity entities;
+
+  // 视频信息，先判断extendedEntities中的media数组，expanded_url不为空则播放视频。
+  // 此时media_url_https为封面图片
+  final Entity extendedEntities;
   final String source;
   final int inReplyToStatusId;
   final String inReplyToStatusIdStr;
@@ -16,7 +21,11 @@ class HomeItemModel {
   final bool isQuoteStatus;
   final int retweetCount;
   final int favoriteCount;
+
+  // 是否已喜欢
   final bool favorited;
+
+  // 是否已转发
   final bool retweeted;
   final bool possiblySensitive;
   final bool possiblySensitiveAppealable;
@@ -30,6 +39,7 @@ class HomeItemModel {
       this.truncated,
       this.source,
       this.entities,
+      this.extendedEntities,
       this.inReplyToStatusId,
       this.inReplyToStatusIdStr,
       this.inReplyToUserId,
@@ -67,7 +77,10 @@ class HomeItemModel {
         possiblySensitive: json['possibly_sensitive'],
         possiblySensitiveAppealable: json['possibly_sensitive_appealable'],
         lang: json['lang'],
-        entities: Entity.fromJson(json['entities']));
+        entities: Entity.fromJson(
+          json['entities'],
+        ),
+        extendedEntities: Entity.fromJson(json['extended_entities']));
   }
 
   String get content {
@@ -76,7 +89,6 @@ class HomeItemModel {
       result = text.substring(0, text.indexOf('https'));
       result = result.trim();
     }
-    print(result);
     return result;
   }
 }
@@ -114,6 +126,8 @@ class User {
   final bool hasExtendedProfile;
   final bool defaultProfile;
   final bool defaultProfileImage;
+
+  // 是否关注
   final bool following;
   final bool followRequestSent;
   final bool notifications;
@@ -201,9 +215,15 @@ class Entity {
   Entity(this._media);
 
   factory Entity.fromJson(Map<String, dynamic> json) {
+    if (json == null) {
+      return null;
+    }
     List<Media> mediaList;
     if (json['media'] != null) {
-      json['media'].map((e) => Media.fromJson(e)).toList();
+      print(json['media']);
+      // map是List的方法，as的作用是将json['media']转换为List使用
+      var mediaJson = json['media'] as List;
+      mediaList = mediaJson.map((e) => Media.fromJson(e)).toList();
     }
     return Entity(mediaList);
   }

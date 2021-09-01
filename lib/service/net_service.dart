@@ -68,12 +68,11 @@ class NetService {
     if (response.statusCode == 200) {
       Utf8Decoder utf8decoder = Utf8Decoder();
       var jsonResponse = json.decode(utf8decoder.convert(response.bodyBytes));
+      //return HomeListModel.fromJson(homeTimeLineData.homeTimeLineList);
       return HomeListModel.fromJson(jsonResponse);
     } else {
       throw Exception(
           'Failed to getHomeList, error == ${response.reasonPhrase}, , url == $uri');
     }
-
-    return HomeListModel.fromJson(homeTimeLineData.homeTimeLineList);
   }
 }
