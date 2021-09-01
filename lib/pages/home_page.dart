@@ -108,7 +108,7 @@ class _HomePageState extends State<HomePage>
                   style: TextStyle(color: Color(0xFF616161), fontSize: 13),
                 )),
                 Text(
-                  '· 2天',
+                  '${itemModel.showTime}',
                   style: TextStyle(color: Color(0xFF616161)),
                 ),
                 Opacity(
@@ -135,7 +135,6 @@ class _HomePageState extends State<HomePage>
                 child: _parseItemImgUrl(itemModel) == null
                     ? null
                     : FadeInImage.memoryNetwork(
-                        height: 150,
                         image: _parseItemImgUrl(itemModel),
                         placeholder: kTransparentImage),
               ),
@@ -164,7 +163,6 @@ class _HomePageState extends State<HomePage>
   String _parseItemImgUrl(HomeItemModel itemModel) {
     List<Media> mediaList = itemModel.entities.getMediaList();
     if (mediaList.isNotEmpty) {
-      print('itemImgUrl == ${mediaList[0].mediaUrlHttps}');
       return mediaList[0].mediaUrlHttps;
     }
     return null;

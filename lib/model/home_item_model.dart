@@ -1,3 +1,18 @@
+const Map<String, String> months = {
+  'Jan': '01',
+  'Feb': '02',
+  'Mar': '03',
+  'Apr': '04',
+  'May': '05',
+  'Jun': '06',
+  'Jul': '07',
+  'Aug': '08',
+  'Sep': '09',
+  'Oct': '10',
+  'Nov': '11',
+  'Dec': '12',
+};
+
 class HomeItemModel {
   final String createdTime;
   final int id;
@@ -88,6 +103,39 @@ class HomeItemModel {
     if (text.contains('https')) {
       result = text.substring(0, text.indexOf('https'));
       result = result.trim();
+    }
+    return result;
+  }
+
+  String get showTime {
+    String result = '';
+    if (createdTime != null) {
+      List<String> timeList = createdTime.split(' ');
+      var month = months[timeList[1]];
+      var day = timeList[2];
+      var time = timeList[3];
+      var year = timeList[5];
+      var timeStr = '$year-$month-$day $time';
+      var date = DateTime.parse(timeStr);
+      var now = DateTime.now();
+      Duration duration = now.difference(date);
+      var hours = duration.inHours;
+      var minutes = duration.inMinutes;
+      var seconds = duration.inSeconds;
+      if (hours > 0) {
+        var dayResult = hours ~/ 24;
+        if (dayResult > 0) {
+          result = '· $dayResult天';
+        } else {
+          result = '· $hours时';
+        }
+      } else if (minutes > 0) {
+        result = '· $minutes分';
+      } else if (seconds > 0) {
+        result = '· $seconds秒';
+      } else {
+        print('showTime error');
+      }
     }
     return result;
   }
@@ -220,7 +268,6 @@ class Entity {
     }
     List<Media> mediaList;
     if (json['media'] != null) {
-      print(json['media']);
       // map是List的方法，as的作用是将json['media']转换为List使用
       var mediaJson = json['media'] as List;
       mediaList = mediaJson.map((e) => Media.fromJson(e)).toList();

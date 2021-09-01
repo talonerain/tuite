@@ -25,8 +25,8 @@ class NetService {
   static Future<HomeListModel> getHomeList(
       int pageIndex, String userName) async {
     String requestUrl = "/1.1/statuses/home_timeline.json";
-    int timeStampValue = new DateTime.now().millisecondsSinceEpoch;
-    String timeStamp = '1630421552';
+    int timeStampValue = (new DateTime.now().millisecondsSinceEpoch) ~/ 1000;
+    String timeStamp = timeStampValue.toString();
     String oauthNonce = 'NDMyNTk4NzM0MjUwOTgzNDc1ODM5ODU3NjQ3NTY4MzK';
     // 认证参数：用于构建签名base
     String authParams = 'oauth_consumer_key=$apiKey&'
@@ -59,10 +59,8 @@ class NetService {
         'oauth_token="$accessToken", '
         'oauth_version="1.0"';
     // 构建url，map是可选参数
-    Uri uri = Uri.https(BASE_DOMAIN, requestUrl, {
-      'screen_name': userName,
-      'tweet_mode': 'extended'
-    });
+    Uri uri = Uri.https(BASE_DOMAIN, requestUrl,
+        {'screen_name': userName, 'tweet_mode': 'extended'});
     var response = await get(uri, headers: {'Authorization': authInfo});
     print('response.statusCode == ${response.statusCode}');
     if (response.statusCode == 200) {
