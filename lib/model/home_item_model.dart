@@ -119,7 +119,9 @@ class HomeItemModel {
       var date = DateTime.parse(timeStr);
       var now = DateTime.now();
       Duration duration = now.difference(date);
-      var hours = duration.inHours;
+      // 美国时间所以要减8
+      var hours = duration.inHours - 8;
+      // 这个inMinutes代表把duration换算成分钟，而不是减掉小时后剩余的分钟
       var minutes = duration.inMinutes;
       var seconds = duration.inSeconds;
       if (hours > 0) {
@@ -130,9 +132,10 @@ class HomeItemModel {
           result = '· $hours时';
         }
       } else if (minutes > 0) {
-        result = '· $minutes分';
+        var resultValue = minutes % ((hours + 8) * 60);
+        result = '· $resultValue分';
       } else if (seconds > 0) {
-        result = '· $seconds秒';
+        result = '· 1分';
       } else {
         print('showTime error');
       }

@@ -34,22 +34,18 @@ class NetService {
         'oauth_signature_method=HMAC-SHA1&oauth_timestamp=$timeStamp&'
         'oauth_token=$accessToken&'
         'oauth_version=1.0&screen_name=$userName&tweet_mode=extended';
-    print('timeStamp == ' + timeStamp);
     // 签名base：请求方式&url&认证参数
     String baseString = Uri.encodeComponent('GET') +
         '&' +
         Uri.encodeComponent('https://api.twitter.com' + requestUrl) +
         '&' +
         Uri.encodeComponent(authParams);
-    print('baseString == ' + baseString);
     // 签名密钥
     String signingKey = '$apiSecretKey&$accessTokenSecret';
-    print('signingKey == ' + signingKey);
     // 签名
     var hMac = Hmac(sha1, signingKey.codeUnits);
     String signResult = Uri.encodeComponent(
         base64Encode(hMac.convert(baseString.codeUnits).bytes));
-    print('signResult == ' + signResult);
     // 认证信息，请求头带到后端
     String authInfo = 'OAuth oauth_consumer_key="$apiKey", '
         'oauth_nonce="$oauthNonce", '
@@ -58,6 +54,7 @@ class NetService {
         'oauth_timestamp="$timeStamp", '
         'oauth_token="$accessToken", '
         'oauth_version="1.0"';
+    print('authInfo == $authInfo');
     // 构建url，map是可选参数
     Uri uri = Uri.https(BASE_DOMAIN, requestUrl,
         {'screen_name': userName, 'tweet_mode': 'extended'});
