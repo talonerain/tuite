@@ -45,6 +45,7 @@ class HomeItemModel {
   final bool possiblySensitive;
   final bool possiblySensitiveAppealable;
   final String lang;
+  final HomeItemModel retweetedStatus;
 
   HomeItemModel(
       {this.createdTime,
@@ -68,9 +69,11 @@ class HomeItemModel {
       this.retweeted,
       this.possiblySensitive,
       this.possiblySensitiveAppealable,
-      this.lang});
+      this.lang,
+      this.retweetedStatus});
 
   factory HomeItemModel.fromJson(Map<String, dynamic> json) {
+    Map retweetedData = json['retweeted_status'];
     return HomeItemModel(
         user: User.fromJson(json['user']),
         createdTime: json['created_at'],
@@ -95,7 +98,10 @@ class HomeItemModel {
         entities: Entity.fromJson(
           json['entities'],
         ),
-        extendedEntities: Entity.fromJson(json['extended_entities']));
+        extendedEntities: Entity.fromJson(json['extended_entities']),
+        retweetedStatus: retweetedData == null
+            ? null
+            : HomeItemModel.fromJson(retweetedData));
   }
 
   String get content {

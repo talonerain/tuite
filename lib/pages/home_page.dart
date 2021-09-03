@@ -65,98 +65,147 @@ class _HomePageState extends State<HomePage>
     });
   }
 
-  Widget _item(HomeItemModel itemModel, int itemIndex) {
+  Widget _item(HomeItemModel homeItemModel, int itemIndex) {
+    var itemModel = homeItemModel;
+    var isRetweeted = homeItemModel.retweetedStatus != null;
+    if (isRetweeted) {
+      itemModel = homeItemModel.retweetedStatus;
+    }
     return Container(
       padding: EdgeInsets.fromLTRB(10, 8, 10, 10),
       decoration: BoxDecoration(
           border: Border(bottom: BorderSide(width: 0.3, color: Colors.grey))),
-      child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Padding(
-            padding: EdgeInsets.only(top: 2),
-            child: CircleAvatar(
-              radius: 24,
-              backgroundImage:
-                  NetworkImage(itemModel.user.profileImageUrlHttps),
-            )),
-        SizedBox(width: 10),
-        Expanded(
-            child: Column(
-          // 如果不设置这个属性，text文字会居中，不会从开始展示
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Text(
-                  itemModel.user.name,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 15,
-                  ),
-                ),
-                SizedBox(width: 2),
-                Icon(
-                  Icons.verified,
-                  color: Colors.blue,
-                  size: 15,
-                ),
-                SizedBox(width: 2),
-                Expanded(
-                    child: Text(
-                  '@' + itemModel.user.screenName,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(color: Color(0xFF616161), fontSize: 13),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            child: isRetweeted
+                ? FractionallySizedBox(
+                    widthFactor: 1,
+                    child: Stack(
+                      alignment: Alignment.centerLeft,
+                      children: [
+                        Container(
+                          child: Align(
+                            child: Icon(
+                              Icons.repeat,
+                              size: 15,
+                              color: Colors.blueGrey,
+                            ),
+                            alignment: Alignment.centerRight,
+                          ),
+                          width: 48,
+                          margin: EdgeInsets.only(top: 2.5),
+                        ),
+                        Positioned(
+                            left: 58,
+                            child: Text('${homeItemModel.user.name}转推了',
+                                style: TextStyle(
+                                    color: Colors.blueGrey,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 12))),
+                      ],
+                    ),
+                  )
+                : null,
+          ),
+          Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Padding(
+                padding: EdgeInsets.only(top: 2),
+                child: CircleAvatar(
+                  radius: 24,
+                  backgroundImage:
+                      NetworkImage(itemModel.user.profileImageUrlHttps),
                 )),
-                Text(
-                  '${itemModel.showTime}',
-                  style: TextStyle(color: Color(0xFF616161)),
+            SizedBox(width: 10),
+            Expanded(
+                child: Column(
+              // 如果不设置这个属性，text文字会居中，不会从开始展示
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Text(
+                      itemModel.user.name,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15,
+                      ),
+                    ),
+                    SizedBox(width: 2),
+                    Icon(
+                      Icons.verified,
+                      color: Colors.blue,
+                      size: 15,
+                    ),
+                    SizedBox(width: 2),
+                    Expanded(
+                        child: Text(
+                      '@' + itemModel.user.screenName,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(color: Color(0xFF616161), fontSize: 13),
+                    )),
+                    Text(
+                      '${itemModel.showTime}',
+                      style: TextStyle(color: Color(0xFF616161)),
+                    ),
+                    Opacity(
+                      opacity: 0.4,
+                      child: Icon(
+                        Icons.more_vert,
+                        color: Colors.grey,
+                        size: 19,
+                      ),
+                    )
+                  ],
                 ),
-                Opacity(
-                  opacity: 0.4,
-                  child: Icon(
-                    Icons.more_vert,
-                    color: Colors.grey,
-                    size: 19,
+                Container(
+                  margin: EdgeInsets.only(right: 5),
+                  child: Text(
+                    itemModel.content,
+                    style: TextStyle(fontSize: 15, color: Colors.black),
                   ),
+                ),
+                // 动态控制widget是否展示
+                Container(
+                  child: _parseItemImgUrl(itemModel) == null
+                      ? null
+                      : FractionallySizedBox(
+                          widthFactor: 1,
+                          child: ClipRRect(
+                              borderRadius: BorderRadius.circular(10),
+                              child: AspectRatio(
+                                aspectRatio: 1.5 / 1,
+                                child: FadeInImage.memoryNetwork(
+                                    // BoxFit.cover类似centerCrop
+                                    fit: BoxFit.cover,
+                                    image: _parseItemImgUrl(itemModel),
+                                    placeholder: kTransparentImage),
+                              )),
+                        ),
+                  margin: EdgeInsets.fromLTRB(0, 8, 10, 0),
+                ),
+                SizedBox(height: 10),
+                Container(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      _itemIconBox(Icons.mode_comment_outlined, ''),
+                      _itemIconBox(
+                          Icons.repeat, itemModel.retweetCount.toString()),
+                      _itemIconBox(Icons.favorite_border,
+                          itemModel.favoriteCount.toString()),
+                      _itemIconBox(Icons.share_outlined, ''),
+                    ],
+                  ),
+                  margin: EdgeInsets.only(right: 35),
                 )
               ],
-            ),
-            Container(
-              margin: EdgeInsets.only(right: 5),
-              child: Text(
-                itemModel.content,
-                style: TextStyle(fontSize: 15, color: Colors.black),
-              ),
-            ),
-            // 动态控制widget是否展示
-            Container(
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: _parseItemImgUrl(itemModel) == null
-                    ? null
-                    : FadeInImage.memoryNetwork(
-                        image: _parseItemImgUrl(itemModel),
-                        placeholder: kTransparentImage),
-              ),
-              margin: EdgeInsets.fromLTRB(0, 8, 10, 0),
-            ),
-            SizedBox(height: 10),
-            Container(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  _itemIconBox(Icons.mode_comment_outlined, ''),
-                  _itemIconBox(Icons.repeat, itemModel.retweetCount.toString()),
-                  _itemIconBox(Icons.favorite_border,
-                      itemModel.favoriteCount.toString()),
-                  _itemIconBox(Icons.share_outlined, ''),
-                ],
-              ),
-              margin: EdgeInsets.only(right: 35),
-            )
-          ],
-        )),
-      ]),
+            )),
+          ]),
+        ],
+      ),
     );
   }
 
