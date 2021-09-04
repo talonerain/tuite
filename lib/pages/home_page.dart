@@ -219,7 +219,9 @@ class _HomePageState extends State<HomePage>
 
   Widget _itemIconBox(IconData iconData, String num) {
     return GestureDetector(
-        onTap: () => print('点击'),
+        onTap: () => {
+
+        },
         child: Row(
           children: [
             Icon(iconData, color: Color(0xFF616161), size: 18),
@@ -234,6 +236,10 @@ class _HomePageState extends State<HomePage>
             )
           ],
         ));
+  }
+
+  Future<Null> doLike(String id) async{
+    bool result = await NetService.postFavCreate(id);
   }
 
   @override

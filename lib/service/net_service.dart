@@ -4,9 +4,7 @@ import 'package:tuite/model/home_list_model.dart';
 
 // dart文件可以不取类名只写方法，由调用方自定义类名
 import 'package:http/http.dart';
-import 'home_timeline_data.dart' as homeTimeLineData;
 import 'package:crypto/crypto.dart';
-import 'package:dio/dio.dart';
 
 const BASE_DOMAIN = 'api.twitter.com';
 const apiKey = 'pSrO11kSygw7Lot2lFHtnD9df';
@@ -68,6 +66,48 @@ class NetService {
     } else {
       throw Exception(
           'Failed to getHomeList, error == ${response.reasonPhrase}, , url == $uri');
+    }
+  }
+
+  static Future<bool> postFavCreate(String tweetId) async {
+    String requestUrl = "/1.1/favorites/create.json";
+    int timeStampValue = (new DateTime.now().millisecondsSinceEpoch) ~/ 1000;
+    String timeStamp = timeStampValue.toString();
+    String oauthNonce = 'NDMyNTk4NzM0MjUwOTgzNDc1ODM5ODU3NjQ3NTY4MzK';
+    // 认证参数：用于构建签名base
+    String authParams = 'oauth_consumer_key=$apiKey&'
+        'oauth_nonce=$oauthNonce&'
+        'oauth_signature_method=HMAC-SHA1&oauth_timestamp=$timeStamp&'
+        'oauth_token=$accessToken&'
+        'oauth_version=1.0&id=$tweetId';
+    // 签名base：请求方式&url&认证参数
+    String baseString = Uri.encodeComponent('POST') +
+        '&' +
+        Uri.encodeComponent('https://api.twitter.com' + requestUrl) +
+        '&' +
+        Uri.encodeComponent(authParams);
+    // 签名密钥
+    String signingKey = '$apiSecretKey&$accessTokenSecret';
+    // 签名
+    var hMac = Hmac(sha1, signingKey.codeUnits);
+    String signResult = Uri.encodeComponent(
+        base64Encode(hMac.convert(baseString.codeUnits).bytes));
+    // 认证信息，请求头带到后端
+    String authInfo = 'OAuth oauth_consumer_key="$apiKey", '
+        'oauth_nonce="$oauthNonce", '
+        'oauth_signature=$signResult, '
+        'oauth_signature_method="HMAC-SHA1", '
+        'oauth_timestamp="$timeStamp", '
+        'oauth_token="$accessToken", '
+        'oauth_version="1.0"';
+    print('authInfo == $authInfo');
+    Uri uri = Uri.https(BASE_DOMAIN, requestUrl, {'id': tweetId});
+    var response = await post(uri, headers: {'Authorization': authInfo});
+    print('response.statusCode == ${response.statusCode}');
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      return false;
     }
   }
 }
