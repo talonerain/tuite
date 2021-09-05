@@ -38,7 +38,7 @@ class HomeItemModel {
   final int favoriteCount;
 
   // 是否已喜欢
-  final bool favorited;
+  bool favorited;
 
   // 是否已转发
   final bool retweeted;

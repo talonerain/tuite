@@ -70,6 +70,7 @@ class NetService {
   }
 
   static Future<bool> postFavCreate(String tweetId) async {
+    print('tweetId == $tweetId');
     String requestUrl = "/1.1/favorites/create.json";
     int timeStampValue = (new DateTime.now().millisecondsSinceEpoch) ~/ 1000;
     String timeStamp = timeStampValue.toString();
@@ -86,6 +87,7 @@ class NetService {
         Uri.encodeComponent('https://api.twitter.com' + requestUrl) +
         '&' +
         Uri.encodeComponent(authParams);
+    print('baseString == $baseString');
     // 签名密钥
     String signingKey = '$apiSecretKey&$accessTokenSecret';
     // 签名

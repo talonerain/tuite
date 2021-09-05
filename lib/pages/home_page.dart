@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:tuite/model/home_item_model.dart';
 import 'package:tuite/model/home_list_model.dart';
 import 'package:transparent_image/transparent_image.dart';
+import 'package:tuite/service/home_timeline_data.dart';
 import '../service/net_service.dart';
 
 class HomePage extends StatefulWidget {
@@ -191,12 +192,24 @@ class _HomePageState extends State<HomePage>
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      _itemIconBox(Icons.mode_comment_outlined, ''),
+                      _itemIconBox(Icons.mode_comment_outlined, '', 0,
+                          itemModel, Color(0xFF616161)),
                       _itemIconBox(
-                          Icons.repeat, itemModel.retweetCount.toString()),
-                      _itemIconBox(Icons.favorite_border,
-                          itemModel.favoriteCount.toString()),
-                      _itemIconBox(Icons.share_outlined, ''),
+                          Icons.repeat,
+                          itemModel.retweetCount.toString(),
+                          1,
+                          itemModel,
+                          Color(0xFF616161)),
+                      _itemIconBox(
+                          itemModel.favorited ? Icons.favorite : Icons.favorite_border,
+                          itemModel.favoriteCount.toString(),
+                          2,
+                          itemModel,
+                          itemModel.favorited
+                              ? Colors.redAccent
+                              : Color(0xFF616161)),
+                      _itemIconBox(Icons.share_outlined, '', 3, itemModel,
+                          Color(0xFF616161)),
                     ],
                   ),
                   margin: EdgeInsets.only(right: 35),
@@ -217,14 +230,21 @@ class _HomePageState extends State<HomePage>
     return null;
   }
 
-  Widget _itemIconBox(IconData iconData, String num) {
+  Widget _itemIconBox(IconData iconData, String num, var index,
+      HomeItemModel itemModel, var iconColor) {
     return GestureDetector(
-        onTap: () => {
-
+        onTap: () {
+          print('icon click');
+          switch (index) {
+            case 2:
+              itemModel.favorited = true;
+              setState(() {});
+              doLike(itemModel.idStr);
+          }
         },
         child: Row(
           children: [
-            Icon(iconData, color: Color(0xFF616161), size: 18),
+            Icon(iconData, color: iconColor, size: 18),
             SizedBox(width: 6),
             Offstage(
               // offstage为true隐藏控件
@@ -238,7 +258,7 @@ class _HomePageState extends State<HomePage>
         ));
   }
 
-  Future<Null> doLike(String id) async{
+  Future<Null> doLike(String id) async {
     bool result = await NetService.postFavCreate(id);
   }
 
