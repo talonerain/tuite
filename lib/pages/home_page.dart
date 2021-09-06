@@ -26,12 +26,14 @@ class _HomePageState extends State<HomePage>
   @override
   void initState() {
     super.initState();
-    _loadData(true);
+    _loadData(isRefresh: true);
     _scrollController.addListener(() {
+      print('pixels == ${_scrollController.position.pixels}, max == '
+          '${_scrollController.position.maxScrollExtent}');
       if (_scrollController.position.pixels ==
-          _scrollController.position.maxScrollExtent - 3) {
+          _scrollController.position.maxScrollExtent) {
         _pageIndex++;
-        _loadData(false);
+        _loadData(maxId: list[list.length - 1].idStr);
       }
     });
   }
@@ -50,17 +52,19 @@ class _HomePageState extends State<HomePage>
   }
 
   Future<Null> _handlerRefresh() async {
-    _loadData(true);
+    _loadData(isRefresh: true);
     return null;
   }
 
-  _loadData(bool isRefresh) async {
+  _loadData({isRefresh = false, String maxId = ''}) async {
+    print('_loadData call, isRefresh == $isRefresh');
     if (isRefresh) {
       _pageIndex = 0;
       list.clear();
     }
-    HomeListModel homeListModel =
-        await NetService.getHomeList(_pageIndex, "QoogZuwdghUwO6h");
+    HomeListModel homeListModel = await NetService.getHomeList(
+        _pageIndex, "QoogZuwdghUwO6h",
+        maxId: maxId);
     setState(() {
       list.addAll(homeListModel.homeList);
     });
@@ -201,7 +205,9 @@ class _HomePageState extends State<HomePage>
                           itemModel,
                           Color(0xFF616161)),
                       _itemIconBox(
-                          itemModel.favorited ? Icons.favorite : Icons.favorite_border,
+                          itemModel.favorited
+                              ? Icons.favorite
+                              : Icons.favorite_border,
                           itemModel.favoriteCount.toString(),
                           2,
                           itemModel,
@@ -238,8 +244,9 @@ class _HomePageState extends State<HomePage>
           switch (index) {
             case 2:
               itemModel.favorited = true;
+              itemModel.favoriteCount++;
               setState(() {});
-              doLike(itemModel.idStr);
+              doLike(itemModel.idStr, itemModel.user.screenName);
           }
         },
         child: Row(
@@ -258,8 +265,8 @@ class _HomePageState extends State<HomePage>
         ));
   }
 
-  Future<Null> doLike(String id) async {
-    bool result = await NetService.postFavCreate(id);
+  Future<Null> doLike(String id, String name) async {
+    bool result = await NetService.postFavCreate(id, "QoogZuwdghUwO6h");
   }
 
   @override

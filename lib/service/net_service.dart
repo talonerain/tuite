@@ -20,8 +20,8 @@ class NetService {
   ///
   /// 在Dart中，有await标记的运算，其结果值都是一个Future对象，要使用await，
   /// 必须在有async标记的函数中运行，否则这个await会报错
-  static Future<HomeListModel> getHomeList(
-      int pageIndex, String userName) async {
+  static Future<HomeListModel> getHomeList(int pageIndex, String userName,
+      {String maxId = ''}) async {
     String requestUrl = "/1.1/statuses/home_timeline.json";
     int timeStampValue = (new DateTime.now().millisecondsSinceEpoch) ~/ 1000;
     String timeStamp = timeStampValue.toString();
@@ -32,6 +32,13 @@ class NetService {
         'oauth_signature_method=HMAC-SHA1&oauth_timestamp=$timeStamp&'
         'oauth_token=$accessToken&'
         'oauth_version=1.0&screen_name=$userName&tweet_mode=extended';
+    Map<String, dynamic> requestParams = {'screen_name': userName, 'tweet_mode': 'extended'};
+    if (maxId.isNotEmpty) {
+      authParams = authParams + '&max_id=$maxId';
+      requestParams['max_id'] = maxId;
+    }
+    print('authParams == $authParams');
+
     // 签名base：请求方式&url&认证参数
     String baseString = Uri.encodeComponent('GET') +
         '&' +
@@ -47,15 +54,14 @@ class NetService {
     // 认证信息，请求头带到后端
     String authInfo = 'OAuth oauth_consumer_key="$apiKey", '
         'oauth_nonce="$oauthNonce", '
-        'oauth_signature=$signResult, '
+        'oauth_signature="$signResult", '
         'oauth_signature_method="HMAC-SHA1", '
         'oauth_timestamp="$timeStamp", '
         'oauth_token="$accessToken", '
         'oauth_version="1.0"';
     print('authInfo == $authInfo');
     // 构建url，map是可选参数
-    Uri uri = Uri.https(BASE_DOMAIN, requestUrl,
-        {'screen_name': userName, 'tweet_mode': 'extended'});
+    Uri uri = Uri.https(BASE_DOMAIN, requestUrl, requestParams);
     var response = await get(uri, headers: {'Authorization': authInfo});
     print('response.statusCode == ${response.statusCode}');
     if (response.statusCode == 200) {
@@ -69,18 +75,18 @@ class NetService {
     }
   }
 
-  static Future<bool> postFavCreate(String tweetId) async {
+  static Future<bool> postFavCreate(String tweetId, String userName) async {
     print('tweetId == $tweetId');
     String requestUrl = "/1.1/favorites/create.json";
     int timeStampValue = (new DateTime.now().millisecondsSinceEpoch) ~/ 1000;
     String timeStamp = timeStampValue.toString();
-    String oauthNonce = 'NDMyNTk4NzM0MjUwOTgzNDc1ODM5ODU3NjQ3NTY4MzK';
+    String oauthNonce = 'NDMyNTk4NzM0MjUwOTgzNDc1ODM5ODU3NjQ3NTY4MzO';
     // 认证参数：用于构建签名base
     String authParams = 'oauth_consumer_key=$apiKey&'
         'oauth_nonce=$oauthNonce&'
         'oauth_signature_method=HMAC-SHA1&oauth_timestamp=$timeStamp&'
         'oauth_token=$accessToken&'
-        'oauth_version=1.0&id=$tweetId';
+        'oauth_version=1.0&screen_name=$userName&id=$tweetId';
     // 签名base：请求方式&url&认证参数
     String baseString = Uri.encodeComponent('POST') +
         '&' +
@@ -90,6 +96,7 @@ class NetService {
     print('baseString == $baseString');
     // 签名密钥
     String signingKey = '$apiSecretKey&$accessTokenSecret';
+    print('signingKey == $signingKey');
     // 签名
     var hMac = Hmac(sha1, signingKey.codeUnits);
     String signResult = Uri.encodeComponent(
@@ -97,13 +104,14 @@ class NetService {
     // 认证信息，请求头带到后端
     String authInfo = 'OAuth oauth_consumer_key="$apiKey", '
         'oauth_nonce="$oauthNonce", '
-        'oauth_signature=$signResult, '
+        'oauth_signature="$signResult", '
         'oauth_signature_method="HMAC-SHA1", '
         'oauth_timestamp="$timeStamp", '
         'oauth_token="$accessToken", '
         'oauth_version="1.0"';
     print('authInfo == $authInfo');
-    Uri uri = Uri.https(BASE_DOMAIN, requestUrl, {'id': tweetId});
+    Uri uri = Uri.https(
+        BASE_DOMAIN, requestUrl, {'id': tweetId, 'screen_name': userName});
     var response = await post(uri, headers: {'Authorization': authInfo});
     print('response.statusCode == ${response.statusCode}');
     if (response.statusCode == 200) {
