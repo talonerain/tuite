@@ -38,13 +38,14 @@ class NetService {
       requestParams['max_id'] = maxId;
     }
     print('authParams == $authParams');
-
+    print(requestParams);
     // 签名base：请求方式&url&认证参数
     String baseString = Uri.encodeComponent('GET') +
         '&' +
         Uri.encodeComponent('https://api.twitter.com' + requestUrl) +
         '&' +
         Uri.encodeComponent(authParams);
+    print('baseString == $baseString');
     // 签名密钥
     String signingKey = '$apiSecretKey&$accessTokenSecret';
     // 签名
