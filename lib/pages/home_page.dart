@@ -28,12 +28,12 @@ class _HomePageState extends State<HomePage>
     super.initState();
     _loadData(isRefresh: true);
     _scrollController.addListener(() {
-      print('pixels == ${_scrollController.position.pixels}, max == '
-          '${_scrollController.position.maxScrollExtent}');
+      /*print('pixels == ${_scrollController.position.pixels}, max == '
+          '${_scrollController.position.maxScrollExtent}');*/
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
         _pageIndex++;
-        _loadData(maxId: list[list.length - 1].idStr);
+        _loadData(maxId: list[list.length - 1].id);
       }
     });
   }
@@ -56,7 +56,7 @@ class _HomePageState extends State<HomePage>
     return null;
   }
 
-  _loadData({isRefresh = false, String maxId = ''}) async {
+  _loadData({isRefresh = false, int maxId = 0}) async {
     print('_loadData call, isRefresh == $isRefresh');
     if (isRefresh) {
       _pageIndex = 0;
@@ -246,7 +246,7 @@ class _HomePageState extends State<HomePage>
               itemModel.favorited = true;
               itemModel.favoriteCount++;
               setState(() {});
-              doLike(itemModel.idStr, itemModel.user.screenName);
+              doLike(itemModel.id, itemModel.user.screenName);
           }
         },
         child: Row(
@@ -265,7 +265,7 @@ class _HomePageState extends State<HomePage>
         ));
   }
 
-  Future<Null> doLike(String id, String name) async {
+  Future<Null> doLike(int id, String name) async {
     bool result = await NetService.postFavCreate(id, "QoogZuwdghUwO6h");
   }
 

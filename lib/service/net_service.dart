@@ -21,7 +21,8 @@ class NetService {
   /// 在Dart中，有await标记的运算，其结果值都是一个Future对象，要使用await，
   /// 必须在有async标记的函数中运行，否则这个await会报错
   static Future<HomeListModel> getHomeList(int pageIndex, String userName,
-      {String maxId = ''}) async {
+      {int maxId = 0}) async {
+    print('maxId == $maxId');
     String requestUrl = "/1.1/statuses/home_timeline.json";
     int timeStampValue = (new DateTime.now().millisecondsSinceEpoch) ~/ 1000;
     String timeStamp = timeStampValue.toString();
@@ -33,7 +34,7 @@ class NetService {
         'oauth_token=$accessToken&'
         'oauth_version=1.0&screen_name=$userName&tweet_mode=extended';
     Map<String, dynamic> requestParams = {'screen_name': userName, 'tweet_mode': 'extended'};
-    if (maxId.isNotEmpty) {
+    if (maxId > 0) {
       authParams = authParams + '&max_id=$maxId';
       requestParams['max_id'] = maxId;
     }
@@ -76,7 +77,7 @@ class NetService {
     }
   }
 
-  static Future<bool> postFavCreate(String tweetId, String userName) async {
+  static Future<bool> postFavCreate(int tweetId, String userName) async {
     print('tweetId == $tweetId');
     String requestUrl = "/1.1/favorites/create.json";
     int timeStampValue = (new DateTime.now().millisecondsSinceEpoch) ~/ 1000;
