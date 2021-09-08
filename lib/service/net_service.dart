@@ -21,7 +21,7 @@ class NetService {
   /// 在Dart中，有await标记的运算，其结果值都是一个Future对象，要使用await，
   /// 必须在有async标记的函数中运行，否则这个await会报错
   static Future<HomeListModel> getHomeList(int pageIndex, String userName,
-      {int maxId = 0}) async {
+      {var maxId = 0}) async {
     print('maxId == $maxId');
     String requestUrl = "/1.1/statuses/home_timeline.json";
     int timeStampValue = (new DateTime.now().millisecondsSinceEpoch) ~/ 1000;
@@ -33,10 +33,13 @@ class NetService {
         'oauth_signature_method=HMAC-SHA1&oauth_timestamp=$timeStamp&'
         'oauth_token=$accessToken&'
         'oauth_version=1.0&screen_name=$userName&tweet_mode=extended';
-    Map<String, dynamic> requestParams = {'screen_name': userName, 'tweet_mode': 'extended'};
+    Map<String, dynamic> requestParams = {
+      'screen_name': userName,
+      'tweet_mode': 'extended'
+    };
     if (maxId > 0) {
-      authParams = authParams + '&max_id=$maxId';
-      requestParams['max_id'] = maxId;
+      authParams = 'max_id=$maxId&' + authParams;
+      requestParams['max_id'] = maxId.toString();
     }
     print('authParams == $authParams');
     print(requestParams);
@@ -84,11 +87,11 @@ class NetService {
     String timeStamp = timeStampValue.toString();
     String oauthNonce = 'NDMyNTk4NzM0MjUwOTgzNDc1ODM5ODU3NjQ3NTY4MzO';
     // 认证参数：用于构建签名base
-    String authParams = 'oauth_consumer_key=$apiKey&'
+    String authParams = 'id=$tweetId&oauth_consumer_key=$apiKey&'
         'oauth_nonce=$oauthNonce&'
         'oauth_signature_method=HMAC-SHA1&oauth_timestamp=$timeStamp&'
         'oauth_token=$accessToken&'
-        'oauth_version=1.0&screen_name=$userName&id=$tweetId';
+        'oauth_version=1.0&screen_name=$userName';
     // 签名base：请求方式&url&认证参数
     String baseString = Uri.encodeComponent('POST') +
         '&' +
@@ -112,9 +115,10 @@ class NetService {
         'oauth_token="$accessToken", '
         'oauth_version="1.0"';
     print('authInfo == $authInfo');
-    Uri uri = Uri.https(
-        BASE_DOMAIN, requestUrl, {'id': tweetId, 'screen_name': userName});
-    var response = await post(uri, headers: {'Authorization': authInfo});
+    Uri uri = Uri.https(BASE_DOMAIN, requestUrl);
+    var response = await post(uri,
+        headers: {'Authorization': authInfo},
+        body: {'id': tweetId.toString(), 'screen_name': userName});
     print('response.statusCode == ${response.statusCode}');
     if (response.statusCode == 200) {
       return true;
