@@ -113,6 +113,15 @@ class HomeItemModel {
     return result;
   }
 
+  String get favCount{
+    print('FavCount == $favoriteCount');
+    return favoriteCount.toString();
+  }
+
+  setFavCount(var value){
+    favoriteCount = value;
+  }
+
   String get showTime {
     String result = '';
     if (createdTime != null) {

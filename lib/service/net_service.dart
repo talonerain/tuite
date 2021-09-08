@@ -80,9 +80,15 @@ class NetService {
     }
   }
 
-  static Future<bool> postFavCreate(int tweetId, String userName) async {
+  static Future<bool> postFavCreate(
+      var doFav, int tweetId, String userName) async {
     print('tweetId == $tweetId');
-    String requestUrl = "/1.1/favorites/create.json";
+    String requestUrl;
+    if (doFav) {
+      requestUrl = "/1.1/favorites/create.json";
+    } else {
+      requestUrl = "/1.1/favorites/destroy.json";
+    }
     int timeStampValue = (new DateTime.now().millisecondsSinceEpoch) ~/ 1000;
     String timeStamp = timeStampValue.toString();
     String oauthNonce = 'NDMyNTk4NzM0MjUwOTgzNDc1ODM5ODU3NjQ3NTY4MzO';

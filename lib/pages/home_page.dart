@@ -18,6 +18,8 @@ class _HomePageState extends State<HomePage>
   List<HomeItemModel> list = [];
   ScrollController _scrollController = new ScrollController();
 
+  var isRequestLiking = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(body: _listView());
@@ -77,7 +79,7 @@ class _HomePageState extends State<HomePage>
       itemModel = homeItemModel.retweetedStatus;
     }
     return Container(
-      padding: EdgeInsets.fromLTRB(10, 8, 10, 10),
+      padding: EdgeInsets.fromLTRB(10, 8, 10, 0),
       decoration: BoxDecoration(
           border: Border(bottom: BorderSide(width: 0.3, color: Colors.grey))),
       child: Column(
@@ -191,7 +193,6 @@ class _HomePageState extends State<HomePage>
                         ),
                   margin: EdgeInsets.fromLTRB(0, 8, 10, 0),
                 ),
-                SizedBox(height: 10),
                 Container(
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -208,7 +209,7 @@ class _HomePageState extends State<HomePage>
                           itemModel.favorited
                               ? Icons.favorite
                               : Icons.favorite_border,
-                          itemModel.favoriteCount.toString(),
+                          itemModel.favCount,
                           2,
                           itemModel,
                           itemModel.favorited
@@ -238,35 +239,55 @@ class _HomePageState extends State<HomePage>
 
   Widget _itemIconBox(IconData iconData, String num, var index,
       HomeItemModel itemModel, var iconColor) {
+    print('num == $num');
     return GestureDetector(
         onTap: () {
           print('icon click');
           switch (index) {
             case 2:
-              itemModel.favorited = true;
-              itemModel.favoriteCount++;
-              setState(() {});
-              doLike(itemModel.id, itemModel.user.screenName);
+              if (isRequestLiking) {
+                print('return by isRequestLiking');
+                return;
+              }
+              isRequestLiking = true;
+              if (itemModel.favorited) {
+                setState(() {
+                  itemModel.favorited = false;
+                  itemModel.setFavCount(itemModel.favoriteCount - 1);
+                });
+                doLike(false, itemModel.id, itemModel.user.screenName);
+              } else {
+                setState(() {
+                  itemModel.favorited = true;
+                  itemModel.setFavCount(itemModel.favoriteCount + 1);
+                });
+                doLike(true, itemModel.id, itemModel.user.screenName);
+              }
+              print('itemModel.favoriteCount == ${itemModel.favCount}');
           }
         },
-        child: Row(
-          children: [
-            Icon(iconData, color: iconColor, size: 18),
-            SizedBox(width: 6),
-            Offstage(
-              // offstage为true隐藏控件
-              offstage: num.endsWith('0'),
-              child: Text(
-                num,
-                style: TextStyle(color: Color(0xFF616161), fontSize: 13),
-              ),
-            )
-          ],
+        child: Container(
+          padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+          child: Row(
+            children: [
+              Icon(iconData, color: iconColor, size: 18),
+              SizedBox(width: 6),
+              Offstage(
+                // offstage为true隐藏控件
+                offstage: num.endsWith('0'),
+                child: Text(
+                  num,
+                  style: TextStyle(color: Color(0xFF616161), fontSize: 13),
+                ),
+              )
+            ],
+          ),
         ));
   }
 
-  Future<Null> doLike(int id, String name) async {
-    bool result = await NetService.postFavCreate(id, "QoogZuwdghUwO6h");
+  Future<Null> doLike(var like, int id, String name) async {
+    bool result = await NetService.postFavCreate(like, id, "QoogZuwdghUwO6h");
+    isRequestLiking = false;
   }
 
   @override
