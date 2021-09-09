@@ -4,6 +4,7 @@ import 'package:tuite/model/home_list_model.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:tuite/service/home_timeline_data.dart';
 import '../service/net_service.dart';
+import '../utils/ListUtil.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -69,6 +70,7 @@ class _HomePageState extends State<HomePage>
         maxId: maxId);
     setState(() {
       list.addAll(homeListModel.homeList);
+      //removeRepeat(list);
     });
   }
 
@@ -239,7 +241,6 @@ class _HomePageState extends State<HomePage>
 
   Widget _itemIconBox(IconData iconData, String num, var index,
       HomeItemModel itemModel, var iconColor) {
-    print('num == $num');
     return GestureDetector(
         onTap: () {
           print('icon click');
@@ -274,7 +275,7 @@ class _HomePageState extends State<HomePage>
               SizedBox(width: 6),
               Offstage(
                 // offstage为true隐藏控件
-                offstage: num.endsWith('0'),
+                offstage: num == '0',
                 child: Text(
                   num,
                   style: TextStyle(color: Color(0xFF616161), fontSize: 13),
