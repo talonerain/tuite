@@ -34,14 +34,14 @@ class HomeItemModel {
   final String inReplyToScreenName;
   final User user;
   final bool isQuoteStatus;
-  final int retweetCount;
+  int retweetCount;
   int favoriteCount;
 
   // 是否已喜欢
   bool favorited;
 
   // 是否已转发
-  final bool retweeted;
+  bool retweeted;
   final bool possiblySensitive;
   final bool possiblySensitiveAppealable;
   final String lang;
@@ -113,13 +113,20 @@ class HomeItemModel {
     return result;
   }
 
-  String get favCount{
-    print('FavCount == $favoriteCount');
+  String get favCount {
     return favoriteCount.toString();
   }
 
-  setFavCount(var value){
+  setFavCount(var value) {
     favoriteCount = value;
+  }
+
+  String get retweetCnt {
+    return retweetCount.toString();
+  }
+
+  setRetweetCnt(var value) {
+    retweetCount = value;
   }
 
   String get showTime {

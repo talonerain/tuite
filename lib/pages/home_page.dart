@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:tuite/model/home_item_model.dart';
 import 'package:tuite/model/home_list_model.dart';
 import 'package:transparent_image/transparent_image.dart';
@@ -20,6 +21,7 @@ class _HomePageState extends State<HomePage>
   ScrollController _scrollController = new ScrollController();
 
   var isRequestLiking = false;
+  var isRequestRetweeting = false;
 
   @override
   Widget build(BuildContext context) {
@@ -140,6 +142,7 @@ class _HomePageState extends State<HomePage>
                         fontWeight: FontWeight.bold,
                         fontSize: 15,
                       ),
+                      overflow: TextOverflow.ellipsis,
                     ),
                     SizedBox(width: 2),
                     Icon(
@@ -203,10 +206,12 @@ class _HomePageState extends State<HomePage>
                           itemModel, Color(0xFF616161)),
                       _itemIconBox(
                           Icons.repeat,
-                          itemModel.retweetCount.toString(),
+                          itemModel.retweetCnt,
                           1,
                           itemModel,
-                          Color(0xFF616161)),
+                          itemModel.retweeted
+                              ? Colors.green
+                              : Color(0xFF616161)),
                       _itemIconBox(
                           itemModel.favorited
                               ? Icons.favorite
@@ -256,15 +261,32 @@ class _HomePageState extends State<HomePage>
                   itemModel.favorited = false;
                   itemModel.setFavCount(itemModel.favoriteCount - 1);
                 });
-                doLike(false, itemModel.id, itemModel.user.screenName);
+                doLike(false, itemModel.id);
               } else {
                 setState(() {
                   itemModel.favorited = true;
                   itemModel.setFavCount(itemModel.favoriteCount + 1);
                 });
-                doLike(true, itemModel.id, itemModel.user.screenName);
+                doLike(true, itemModel.id);
               }
-              print('itemModel.favoriteCount == ${itemModel.favCount}');
+              break;
+            case 1:
+              if (isRequestRetweeting) {
+                print('return by isRequestRetweeting');
+                return;
+              }
+              if (itemModel.retweeted) {
+                print('return by hasRetweeted');
+                return;
+              }
+              setState(() {
+                itemModel.retweeted = true;
+                itemModel.setRetweetCnt(itemModel.retweetCount++);
+              });
+              doRetweet(itemModel.id);
+              break;
+            case 3:
+              Fluttertoast.showToast(msg: '功能暂未开放');
           }
         },
         child: Container(
@@ -278,7 +300,7 @@ class _HomePageState extends State<HomePage>
                 offstage: num == '0',
                 child: Text(
                   num,
-                  style: TextStyle(color: Color(0xFF616161), fontSize: 13),
+                  style: TextStyle(color: iconColor, fontSize: 13),
                 ),
               )
             ],
@@ -286,9 +308,14 @@ class _HomePageState extends State<HomePage>
         ));
   }
 
-  Future<Null> doLike(var like, int id, String name) async {
+  Future<Null> doLike(var like, int id) async {
     bool result = await NetService.postFavCreate(like, id, "QoogZuwdghUwO6h");
     isRequestLiking = false;
+  }
+
+  Future<Null> doRetweet(int id) async {
+    bool result = await NetService.postRetweet(id, "QoogZuwdghUwO6h");
+    isRequestRetweeting = false;
   }
 
   @override
