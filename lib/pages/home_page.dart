@@ -284,15 +284,20 @@ class _HomePageState extends State<HomePage>
                 print('return by isRequestRetweeting');
                 return;
               }
+              isRequestRetweeting = true;
               if (itemModel.retweeted) {
-                print('return by hasRetweeted');
-                return;
+                setState(() {
+                  itemModel.retweeted = false;
+                  itemModel.setRetweetCnt(itemModel.retweetCount - 1);
+                });
+                doRetweet(false, itemModel.id);
+              } else {
+                setState(() {
+                  itemModel.retweeted = true;
+                  itemModel.setRetweetCnt(itemModel.retweetCount + 1);
+                });
+                doRetweet(true, itemModel.id);
               }
-              setState(() {
-                itemModel.retweeted = true;
-                itemModel.setRetweetCnt(itemModel.retweetCount++);
-              });
-              doRetweet(itemModel.id);
               break;
             case 3:
               Fluttertoast.showToast(msg: '功能暂未开放');
@@ -317,13 +322,13 @@ class _HomePageState extends State<HomePage>
         ));
   }
 
-  Future<Null> doLike(var like, int id) async {
+  Future<Null> doLike(like, id) async {
     bool result = await NetService.postFavCreate(like, id);
     isRequestLiking = false;
   }
 
-  Future<Null> doRetweet(int id) async {
-    bool result = await NetService.postRetweet(id);
+  Future<Null> doRetweet(retweet, id) async {
+    bool result = await NetService.postRetweet(retweet, id);
     isRequestRetweeting = false;
   }
 

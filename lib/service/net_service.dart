@@ -112,9 +112,14 @@ class NetService {
     }
   }
 
-  static Future<bool> postRetweet(tweetId) async {
+  static Future<bool> postRetweet(doRetweet, tweetId) async {
     print('tweetId == $tweetId');
-    String requestUrl = "/1.1/statuses/retweet/$tweetId.json";
+    var requestUrl;
+    if(doRetweet) {
+      requestUrl = "/1.1/statuses/retweet/$tweetId.json";
+    }else{
+      requestUrl = "/1.1/statuses/unretweet/$tweetId.json";
+    }
     int timeStampValue = (new DateTime.now().millisecondsSinceEpoch) ~/ 1000;
     String timeStamp = timeStampValue.toString();
     // 认证参数：用于构建签名base
