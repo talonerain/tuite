@@ -67,9 +67,8 @@ class _HomePageState extends State<HomePage>
       _pageIndex = 0;
       list.clear();
     }
-    HomeListModel homeListModel = await NetService.getHomeList(
-        _pageIndex, "QoogZuwdghUwO6h",
-        maxId: maxId);
+    HomeListModel homeListModel =
+        await NetService.getHomeList(_pageIndex, maxId: maxId);
     setState(() {
       list.addAll(homeListModel.homeList);
       //removeRepeat(list);
@@ -162,13 +161,24 @@ class _HomePageState extends State<HomePage>
                       '${itemModel.showTime}',
                       style: TextStyle(color: Color(0xFF616161)),
                     ),
-                    Opacity(
-                      opacity: 0.4,
-                      child: Icon(
-                        Icons.more_vert,
-                        color: Colors.grey,
-                        size: 19,
+                    GestureDetector(
+                      child: Opacity(
+                        opacity: 0.4,
+                        child: Icon(
+                          Icons.more_vert,
+                          color: Colors.grey,
+                          size: 19,
+                        ),
                       ),
+                      onTap: () {
+                        showModalBottomSheet(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return Column(
+                                children: [],
+                              );
+                            });
+                      },
                     )
                   ],
                 ),
@@ -244,8 +254,7 @@ class _HomePageState extends State<HomePage>
     return null;
   }
 
-  Widget _itemIconBox(IconData iconData, String num, var index,
-      HomeItemModel itemModel, var iconColor) {
+  Widget _itemIconBox(iconData, num, index, itemModel, iconColor) {
     return GestureDetector(
         onTap: () {
           print('icon click');
@@ -309,14 +318,25 @@ class _HomePageState extends State<HomePage>
   }
 
   Future<Null> doLike(var like, int id) async {
-    bool result = await NetService.postFavCreate(like, id, "QoogZuwdghUwO6h");
+    bool result = await NetService.postFavCreate(like, id);
     isRequestLiking = false;
   }
 
   Future<Null> doRetweet(int id) async {
-    bool result = await NetService.postRetweet(id, "QoogZuwdghUwO6h");
+    bool result = await NetService.postRetweet(id);
     isRequestRetweeting = false;
   }
+
+  Widget itemBottomSheet(iconData, text) {
+    return GestureDetector(
+      child: Row(
+        children: [Icon(iconData), Text(text)],
+      ),
+      onTap: () {},
+    );
+  }
+
+  Future<Null> removeTweet() {}
 
   @override
   void dispose() {
