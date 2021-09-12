@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:tuite/model/home_item_model.dart';
@@ -17,15 +18,30 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage>
     with AutomaticKeepAliveClientMixin {
   int _pageIndex = 0;
-  List<HomeItemModel> list = [];
+  List<HomeItemModel> _list = [];
   ScrollController _scrollController = new ScrollController();
 
-  var isRequestLiking = false;
-  var isRequestRetweeting = false;
+  // 正在请求列表接口
+  var _isLoading = false;
+
+  // 正在请求收藏接口
+  var _isRequestLiking = false;
+
+  // 正在请求转发接口
+  var _isRequestRetweeting = false;
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: _listView());
+    return Scaffold(
+        body: _isLoading
+            ? Center(
+                child: Container(
+                    child: CircularProgressIndicator(
+                      strokeWidth: 5,
+                    ),
+                    height: 40,
+                    width: 40))
+            : _listView());
   }
 
   @override
@@ -38,7 +54,7 @@ class _HomePageState extends State<HomePage>
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
         _pageIndex++;
-        _loadData(maxId: list[list.length - 1].id);
+        _loadData(maxId: _list[_list.length - 1].id);
       }
     });
   }
@@ -49,7 +65,7 @@ class _HomePageState extends State<HomePage>
       onRefresh: _handlerRefresh,
       child: ListView(
           controller: _scrollController,
-          children: list.map((model) {
+          children: _list.map((model) {
             itemIndex++;
             return _item(model, itemIndex);
           }).toList()),
@@ -63,14 +79,16 @@ class _HomePageState extends State<HomePage>
 
   _loadData({isRefresh = false, int maxId = 0}) async {
     print('_loadData call, isRefresh == $isRefresh');
+    _isLoading = true;
     if (isRefresh) {
       _pageIndex = 0;
-      list.clear();
+      _list.clear();
     }
     HomeListModel homeListModel =
         await NetService.getHomeList(_pageIndex, maxId: maxId);
     setState(() {
-      list.addAll(homeListModel.homeList);
+      _isLoading = false;
+      _list.addAll(homeListModel.homeList);
       //removeRepeat(list);
     });
   }
@@ -203,11 +221,17 @@ class _HomePageState extends State<HomePage>
                               borderRadius: BorderRadius.circular(10),
                               child: AspectRatio(
                                 aspectRatio: 1.5 / 1,
-                                child: FadeInImage.memoryNetwork(
-                                    // BoxFit.cover类似centerCrop
+                                child: CachedNetworkImage(
                                     fit: BoxFit.cover,
-                                    image: _parseItemImgUrl(itemModel),
-                                    placeholder: kTransparentImage),
+                                    filterQuality: FilterQuality.low,
+                                    imageUrl: _parseItemImgUrl(itemModel),
+                                    placeholder: (context, url) => Container(
+                                          width: 10,
+                                          height: 10,
+                                          child: Center(
+                                            child: CircularProgressIndicator(),
+                                          ),
+                                        )),
                               )),
                         ),
                   margin: EdgeInsets.fromLTRB(0, 8, 10, 0),
@@ -264,11 +288,11 @@ class _HomePageState extends State<HomePage>
           print('icon click');
           switch (index) {
             case 2:
-              if (isRequestLiking) {
+              if (_isRequestLiking) {
                 print('return by isRequestLiking');
                 return;
               }
-              isRequestLiking = true;
+              _isRequestLiking = true;
               if (itemModel.favorited) {
                 setState(() {
                   itemModel.favorited = false;
@@ -284,11 +308,11 @@ class _HomePageState extends State<HomePage>
               }
               break;
             case 1:
-              if (isRequestRetweeting) {
+              if (_isRequestRetweeting) {
                 print('return by isRequestRetweeting');
                 return;
               }
-              isRequestRetweeting = true;
+              _isRequestRetweeting = true;
               if (itemModel.retweeted) {
                 setState(() {
                   itemModel.retweeted = false;
@@ -328,12 +352,12 @@ class _HomePageState extends State<HomePage>
 
   Future<Null> doLike(like, id) async {
     bool result = await NetService.postFavCreate(like, id);
-    isRequestLiking = false;
+    _isRequestLiking = false;
   }
 
   Future<Null> doRetweet(retweet, id) async {
     bool result = await NetService.postRetweet(retweet, id);
-    isRequestRetweeting = false;
+    _isRequestRetweeting = false;
   }
 
   Widget itemBottomSheet(iconData, text) {
