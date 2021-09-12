@@ -144,10 +144,14 @@ class _HomePageState extends State<HomePage>
                       overflow: TextOverflow.ellipsis,
                     ),
                     SizedBox(width: 2),
-                    Icon(
-                      Icons.verified,
-                      color: Colors.blue,
-                      size: 15,
+                    Offstage(
+                      child: Icon(
+                        Icons.verified,
+                        color: Colors.blue,
+                        size: 15,
+                      ),
+                      // 认证用户才展示认证标签
+                      offstage: !itemModel.user.verified,
                     ),
                     SizedBox(width: 2),
                     Expanded(
