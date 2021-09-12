@@ -223,14 +223,10 @@ class _HomePageState extends State<HomePage>
                                 aspectRatio: 1.5 / 1,
                                 child: CachedNetworkImage(
                                     fit: BoxFit.cover,
-                                    filterQuality: FilterQuality.low,
+                                    filterQuality: FilterQuality.none,
                                     imageUrl: _parseItemImgUrl(itemModel),
-                                    placeholder: (context, url) => Container(
-                                          width: 10,
-                                          height: 10,
-                                          child: Center(
-                                            child: CircularProgressIndicator(),
-                                          ),
+                                    placeholder: (context, url) => ColoredBox(
+                                          color: Colors.grey[400],
                                         )),
                               )),
                         ),
