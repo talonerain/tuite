@@ -381,7 +381,7 @@ class _HomePageState extends State<HomePage>
                         ..onTap = () {
                           print('text == ${e} click');
                         },
-                      text: e.startsWith('#') ? e + ' ' : e,
+                      text: e + ' ',
                       style: TextStyle(
                           fontSize: 15,
                           color:
