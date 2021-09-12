@@ -1,6 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:tuite/model/content_text_model.dart';
 import 'package:tuite/model/home_item_model.dart';
 import 'package:tuite/model/home_list_model.dart';
 import 'package:transparent_image/transparent_image.dart';
@@ -206,10 +208,7 @@ class _HomePageState extends State<HomePage>
                 ),
                 Container(
                   margin: EdgeInsets.only(right: 5),
-                  child: Text(
-                    itemModel.content,
-                    style: TextStyle(fontSize: 15, color: Colors.black),
-                  ),
+                  child: getContentTxt(itemModel.content),
                 ),
                 // 动态控制widget是否展示
                 Container(
@@ -365,7 +364,33 @@ class _HomePageState extends State<HomePage>
     );
   }
 
-  Future<Null> removeTweet() {}
+  Widget getContentTxt(String text) {
+    List<String> splitList = text.split(' ');
+    // 只有一个item，说明不存在话题
+    if (splitList.length == 1) {
+      return Text(
+        text,
+        style: TextStyle(fontSize: 15, color: Colors.black),
+      );
+    } else {
+      return RichText(
+          text: TextSpan(
+              children: splitList
+                  .map((e) => TextSpan(
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = () {
+                          print('text == ${e} click');
+                        },
+                      text: e.startsWith('#') ? e + ' ' : e,
+                      style: TextStyle(
+                          fontSize: 15,
+                          color:
+                              e.startsWith('#') ? Colors.blue : Colors.black)))
+                  .toList()));
+    }
+  }
+
+  List<TextSpan> getItemTxt(List<ContentTextModel> results) {}
 
   @override
   void dispose() {
