@@ -11,7 +11,7 @@ class _MsgPageState extends State<MsgPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: Text('MsgPage'),
+        child: Text('消息功能正在开发中...'),
       ),
     );
   }

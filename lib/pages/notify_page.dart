@@ -11,7 +11,7 @@ class NotifyPageState extends State<NotifyPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: Text('NotificationPage'),
+        child: Text('通知功能正在开发中...'),
       ),
     );
   }

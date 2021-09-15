@@ -171,13 +171,18 @@ class _HomePageState extends State<HomePage>
                         ),
                       ),
                       onTap: () {
-                        showModalBottomSheet(
+                        /*showModalBottomSheet(
                             context: context,
                             builder: (BuildContext context) {
-                              return Column(
-                                children: [],
+                              return Container(
+                                child: Row(
+                                  children: [
+
+                                  ],
+                                )
                               );
-                            });
+                            });*/
+                        Fluttertoast.showToast(msg: '功能暂未开放');
                       },
                     )
                   ],
