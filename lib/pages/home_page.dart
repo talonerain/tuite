@@ -151,7 +151,7 @@ class _HomePageState extends State<HomePage>
                       backgroundImage:
                           NetworkImage(itemModel.user.profileImageUrlHttps),
                     ),
-                    onTap: () => NavigatorUtil.push(context, UserPage()))),
+                    onTap: () => NavigatorUtil.push(context, UserPage(itemModel.user)))),
             SizedBox(width: 10),
             Expanded(
                 child: Column(

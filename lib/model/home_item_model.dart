@@ -190,7 +190,7 @@ class User {
   final bool profileBackgroundTitle;
   final String profileImageUrl; //用户头像
   final String profileImageUrlHttps;
-  final String profileBannerUrl;
+  final String profileBannerUrl;  // 用户主页背景图
   final String profileLinkColor;
   final String profileSidebarBorderColor;
   final String profileSidebarFillColor;
