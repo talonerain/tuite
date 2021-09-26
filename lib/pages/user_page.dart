@@ -24,6 +24,7 @@ class _UserPageState extends State<UserPage> {
     return Scaffold(
       body: Container(
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Stack(
               children: [
@@ -71,15 +72,104 @@ class _UserPageState extends State<UserPage> {
                   top: 38,
                 ),
                 Positioned(
-                  child: Text(
-                    _userData.following ? '正在关注' : '关注',
-                    style: TextStyle(fontSize: 15, color: Colors.black),
+                  child: Container(
+                    padding: EdgeInsets.fromLTRB(12, 3, 12, 5),
+                    child: Text(
+                      _userData.following ? '正在关注' : '关注',
+                      style: TextStyle(
+                          fontSize: 15,
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey),
+                        borderRadius: BorderRadius.circular(20.0)),
                   ),
                   right: 15,
-                  bottom: 10,
-                )
+                  bottom: 5,
+                ),
               ],
-            )
+            ),
+            Container(
+              margin: EdgeInsets.fromLTRB(15, 3, 0, 0),
+              child: Row(
+                children: [
+                  Text(
+                    _userData.name,
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                        fontSize: 20),
+                  ),
+                  Offstage(
+                    child: Icon(
+                      Icons.verified,
+                      color: Colors.blue,
+                      size: 15,
+                    ),
+                    // 认证用户才展示认证标签
+                    offstage: !_userData.verified,
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              margin: EdgeInsets.fromLTRB(15, 5, 0, 0),
+              child: Text(
+                '@' + _userData.screenName,
+                maxLines: 1,
+                style: TextStyle(color: Color(0xFF616161), fontSize: 13),
+              ),
+            ),
+            Container(
+              margin: EdgeInsets.fromLTRB(15, 10, 0, 0),
+              child: Text(
+                _userData.description,
+                style: TextStyle(color: Colors.black87, fontSize: 15),
+              ),
+            ),
+            Container(
+              margin: EdgeInsets.fromLTRB(12, 10, 0, 0),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.location_on_outlined,
+                    color: Color(0xFF616161),
+                    size: 17,
+                  ),
+                  Container(width: 3),
+                  Text(
+                    _userData.location,
+                    style: TextStyle(color: Color(0xFF616161), fontSize: 15),
+                  )
+                ],
+              ),
+            ),
+            Container(
+                margin: EdgeInsets.fromLTRB(12, 10, 0, 0),
+                child: RichText(
+                    text: TextSpan(
+                  children: [
+                    TextSpan(
+                        text: _userData.friendsCount?.toString(),
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold)),
+                    TextSpan(
+                        text: ' 正在关注',
+                        style: TextStyle(color: Color(0xFF616161), fontSize: 15)),
+                    TextSpan(
+                        text: '    ' + _userData.followersCount?.toString(),
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold)),
+                    TextSpan(
+                        text: ' 关注者',
+                        style: TextStyle(color: Color(0xFF616161), fontSize: 15)),
+                  ],
+                )))
           ],
         ),
       ),
