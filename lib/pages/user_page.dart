@@ -14,10 +14,17 @@ class UserPage extends StatefulWidget {
   }
 }
 
-class _UserPageState extends State<UserPage> {
+class _UserPageState extends State<UserPage> with TickerProviderStateMixin {
   final User _userData;
+  TabController _tabController;
 
   _UserPageState(this._userData) : super();
+
+  @override
+  void initState() {
+    _tabController = TabController(length: 4, vsync: this);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -146,7 +153,7 @@ class _UserPageState extends State<UserPage> {
               ),
             ),
             Container(
-                margin: EdgeInsets.fromLTRB(12, 10, 0, 0),
+                margin: EdgeInsets.fromLTRB(15, 10, 0, 0),
                 child: RichText(
                     text: TextSpan(
                   children: [
@@ -158,7 +165,8 @@ class _UserPageState extends State<UserPage> {
                             fontWeight: FontWeight.bold)),
                     TextSpan(
                         text: ' 正在关注',
-                        style: TextStyle(color: Color(0xFF616161), fontSize: 15)),
+                        style:
+                            TextStyle(color: Color(0xFF616161), fontSize: 15)),
                     TextSpan(
                         text: '    ' + _userData.followersCount?.toString(),
                         style: TextStyle(
@@ -167,9 +175,43 @@ class _UserPageState extends State<UserPage> {
                             fontWeight: FontWeight.bold)),
                     TextSpan(
                         text: ' 关注者',
-                        style: TextStyle(color: Color(0xFF616161), fontSize: 15)),
+                        style:
+                            TextStyle(color: Color(0xFF616161), fontSize: 15)),
                   ],
-                )))
+                ))),
+            Container(
+              child: TabBar(
+                labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                controller: _tabController,
+                labelColor: Colors.black,
+                tabs: [
+                  Tab(
+                    text: '推文',
+                  ),
+                  Tab(
+                    text: '回复',
+                  ),
+                  Tab(
+                    text: '媒体',
+                  ),
+                  Tab(text: '喜欢')
+                ],
+              ),
+            ),
+            Flexible(
+              child: TabBarView(controller: _tabController, children: [
+                Tab(
+                  text: '推文',
+                ),
+                Tab(
+                  text: '回复',
+                ),
+                Tab(
+                  text: '媒体',
+                ),
+                Tab(text: '喜欢')
+              ]),
+            ),
           ],
         ),
       ),
