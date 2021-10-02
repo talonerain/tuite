@@ -2,6 +2,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:tuite/model/home_item_model.dart';
+import 'package:tuite/model/home_list_model.dart';
+import '../service/net_service.dart';
 
 class UserPage extends StatefulWidget {
   final User _userData;
@@ -24,6 +26,14 @@ class _UserPageState extends State<UserPage> with TickerProviderStateMixin {
   void initState() {
     _tabController = TabController(length: 4, vsync: this);
     super.initState();
+    _loadData();
+  }
+
+  _loadData({isRefresh = false, int maxId = 0}) async {
+    print('_loadData call, isRefresh == $isRefresh');
+    HomeListModel homeListModel = await NetService.getUseTimeLine(0, _userData.id);
+    setState(() {
+    });
   }
 
   @override

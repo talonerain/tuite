@@ -115,9 +115,9 @@ class NetService {
   static Future<bool> postRetweet(doRetweet, tweetId) async {
     print('postRetweet call, tweetId == $tweetId');
     var requestUrl;
-    if(doRetweet) {
+    if (doRetweet) {
       requestUrl = "/1.1/statuses/retweet/$tweetId.json";
-    }else{
+    } else {
       requestUrl = "/1.1/statuses/unretweet/$tweetId.json";
     }
     int timeStampValue = (new DateTime.now().millisecondsSinceEpoch) ~/ 1000;
@@ -138,6 +138,43 @@ class NetService {
       return true;
     } else {
       return false;
+    }
+  }
+
+  static Future<HomeListModel> getUseTimeLine(pageIndex, userId,
+      {maxId = 0}) async {
+    print('getHomeList call, maxId == $maxId');
+    String requestUrl = "/1.1/statuses/user_timeline.json";
+    String timeStamp =
+        ((new DateTime.now().millisecondsSinceEpoch) ~/ 1000).toString();
+    Map<String, dynamic> requestParams = {
+      'screen_name': userName,
+      'tweet_mode': 'extended'
+    };
+    // 认证参数：用于构建签名base
+    String authParams = 'oauth_consumer_key=$apiKey&'
+        'oauth_nonce=$oauthNonce&'
+        'oauth_signature_method=HMAC-SHA1&oauth_timestamp=$timeStamp&'
+        'oauth_token=$accessToken&'
+        'oauth_version=1.0&screen_name=$userName&tweet_mode=extended';
+    if (maxId > 0) {
+      authParams = 'max_id=$maxId&$authParams';
+      requestParams['max_id'] = maxId.toString();
+    }
+    authParams = 'user_id=$userId&$authParams';
+    var authHeader = getAuthHeader('GET', requestUrl, timeStamp, authParams);
+    // 构建url，map是可选参数
+    Uri uri = Uri.https(BASE_DOMAIN, requestUrl, requestParams);
+    var response = await get(uri, headers: {'Authorization': authHeader});
+    print('response.statusCode == ${response.statusCode}');
+    if (response.statusCode == 200) {
+      Utf8Decoder utf8decoder = Utf8Decoder();
+      var jsonResponse = json.decode(utf8decoder.convert(response.bodyBytes));
+      //return HomeListModel.fromJson(homeTimeLineData.homeTimeLineList);
+      return HomeListModel.fromJson(jsonResponse);
+    } else {
+      throw Exception(
+          'Failed to getHomeList, error == ${response.reasonPhrase}, , url == $uri');
     }
   }
 }
