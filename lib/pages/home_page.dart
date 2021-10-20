@@ -5,7 +5,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:tuite/model/content_text_model.dart';
 import 'package:tuite/model/home_item_model.dart';
 import 'package:tuite/model/home_list_model.dart';
-import 'package:tuite/pages/user_page.dart';
+import 'package:tuite/pages/user_page/user_page.dart';
 import '../service/net_service.dart';
 import 'package:tuite/utils/navigator_util.dart';
 

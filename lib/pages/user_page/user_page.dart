@@ -3,7 +3,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:tuite/model/home_item_model.dart';
 import 'package:tuite/model/home_list_model.dart';
-import '../service/net_service.dart';
+import 'package:tuite/pages/user_page/widgets.dart';
+import '../../service/net_service.dart';
 
 class UserPage extends StatefulWidget {
   final User _userData;
@@ -31,8 +32,10 @@ class _UserPageState extends State<UserPage> with TickerProviderStateMixin {
 
   _loadData({isRefresh = false, int maxId = 0}) async {
     print('_loadData call, isRefresh == $isRefresh');
-    HomeListModel homeListModel = await NetService.getUseTimeLine(0, _userData.id);
+    HomeListModel useTimeModel =
+        await NetService.getUseTimeLine(0, _userData.id);
     setState(() {
+      print('length == ${useTimeModel.homeList.length}');
     });
   }
 
@@ -108,28 +111,8 @@ class _UserPageState extends State<UserPage> with TickerProviderStateMixin {
               ],
             ),
             Container(
-              margin: EdgeInsets.fromLTRB(15, 3, 0, 0),
-              child: Row(
-                children: [
-                  Text(
-                    _userData.name,
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                        fontSize: 20),
-                  ),
-                  Offstage(
-                    child: Icon(
-                      Icons.verified,
-                      color: Colors.blue,
-                      size: 15,
-                    ),
-                    // 认证用户才展示认证标签
-                    offstage: !_userData.verified,
-                  ),
-                ],
-              ),
-            ),
+                margin: EdgeInsets.fromLTRB(15, 3, 0, 0),
+                child: nameView(_userData.name, !_userData.verified)),
             Container(
               margin: EdgeInsets.fromLTRB(15, 5, 0, 0),
               child: Text(
@@ -147,81 +130,14 @@ class _UserPageState extends State<UserPage> with TickerProviderStateMixin {
             ),
             Container(
               margin: EdgeInsets.fromLTRB(12, 10, 0, 0),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.location_on_outlined,
-                    color: Color(0xFF616161),
-                    size: 17,
-                  ),
-                  Container(width: 3),
-                  Text(
-                    _userData.location,
-                    style: TextStyle(color: Color(0xFF616161), fontSize: 15),
-                  )
-                ],
-              ),
+              child: locationView(_userData.location),
             ),
             Container(
                 margin: EdgeInsets.fromLTRB(15, 10, 0, 0),
-                child: RichText(
-                    text: TextSpan(
-                  children: [
-                    TextSpan(
-                        text: _userData.friendsCount?.toString(),
-                        style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold)),
-                    TextSpan(
-                        text: ' 正在关注',
-                        style:
-                            TextStyle(color: Color(0xFF616161), fontSize: 15)),
-                    TextSpan(
-                        text: '    ' + _userData.followersCount?.toString(),
-                        style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold)),
-                    TextSpan(
-                        text: ' 关注者',
-                        style:
-                            TextStyle(color: Color(0xFF616161), fontSize: 15)),
-                  ],
-                ))),
-            Container(
-              child: TabBar(
-                labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                controller: _tabController,
-                labelColor: Colors.black,
-                tabs: [
-                  Tab(
-                    text: '推文',
-                  ),
-                  Tab(
-                    text: '回复',
-                  ),
-                  Tab(
-                    text: '媒体',
-                  ),
-                  Tab(text: '喜欢')
-                ],
-              ),
-            ),
-            Flexible(
-              child: TabBarView(controller: _tabController, children: [
-                Tab(
-                  text: '推文',
-                ),
-                Tab(
-                  text: '回复',
-                ),
-                Tab(
-                  text: '媒体',
-                ),
-                Tab(text: '喜欢')
-              ]),
-            ),
+                child:
+                    favView(_userData.friendsCount, _userData.followersCount)),
+            Container(child: tabBar(_tabController)),
+            Flexible(child: tabBarView(_tabController)),
           ],
         ),
       ),

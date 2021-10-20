@@ -17,7 +17,7 @@ class NetService {
   static String oauthNonce = 'NDMyNTk4NzM0MjUwOTgzNDc1ODM5ODU3NjQ3NTY4MzK';
 
   static String getAuthHeader(component, requestUrl, timeStamp, authParams) {
-    print('authParams == $authParams');
+    //print('authParams == $authParams');
     // 签名base：请求方式&url&认证参数
     String baseString = Uri.encodeComponent(component) +
         '&' +
@@ -143,7 +143,7 @@ class NetService {
 
   static Future<HomeListModel> getUseTimeLine(pageIndex, userId,
       {maxId = 0}) async {
-    print('getHomeList call, maxId == $maxId');
+    print('getUseTimeLine call, maxId == $maxId, useId == $userId');
     String requestUrl = "/1.1/statuses/user_timeline.json";
     String timeStamp =
         ((new DateTime.now().millisecondsSinceEpoch) ~/ 1000).toString();
@@ -161,8 +161,8 @@ class NetService {
       authParams = 'max_id=$maxId&$authParams';
       requestParams['max_id'] = maxId.toString();
     }
-    authParams = 'user_id=$userId&$authParams';
     var authHeader = getAuthHeader('GET', requestUrl, timeStamp, authParams);
+    print('authHeader == $authHeader');
     // 构建url，map是可选参数
     Uri uri = Uri.https(BASE_DOMAIN, requestUrl, requestParams);
     var response = await get(uri, headers: {'Authorization': authHeader});
